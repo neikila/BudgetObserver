@@ -1,0 +1,44 @@
+package controllers
+
+import models.{Purchase, Logic, DBAccess}
+import play.api._
+import play.api.data._
+import play.api.data.Form
+import play.api.data.Forms._
+import play.api.libs.json.Json
+import play.api.mvc._
+
+
+class Application extends Controller {
+  def purchases(username: String = "test") = Action {
+    val list = Logic.getPurchases(username)
+    Ok(views.html.purchases(username, list))
+  }
+
+  def index = Action {
+    Ok(views.html.index("Your new application is ready."))
+  }
+
+  case class PurchaseData(product: String, amount: Int)
+  private def getPurchaseForm = {
+    Form(
+      mapping(
+        "product" -> text,
+        "amount" -> number
+      )(PurchaseData.apply)(PurchaseData.unapply)
+    )
+  }
+
+  def savePurchase = Action { implicit request =>
+    val userData = getPurchaseForm.bindFromRequest.get
+    Logic.savePurchase(new Purchase(userData.product, userData.amount, "test"))
+    Redirect(routes.Application.purchases())
+  }
+
+  def savePurchaseJSON = Action { implicit request =>
+    val userData = getPurchaseForm.bindFromRequest.get
+    val purchase = new Purchase(userData.product, userData.amount, "test")
+    Logic.savePurchase(purchase)
+    Ok(purchase.toJson.toString())
+  }
+}

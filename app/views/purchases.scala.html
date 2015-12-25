@@ -1,0 +1,39 @@
+@(customer: String, purchases: List[Purchase])
+
+@main("Purchases") {
+    <h1>Welcome @customer !</h1>
+
+    <ul id="list">
+    @for(purchase <- purchases) {
+        <li>@purchase.productName Amount:@purchase.amount</li>
+    }
+    </ul>
+
+    @helper.form(action = routes.Application.savePurchase()) {
+        <input type="text" name="product" id="product"><br/>
+        <input type="text" name="amount" id="amount"><br/>
+        <input type="submit" value="submit" id="savePur">
+    }
+}{
+    <script type="text/javascript">
+            $(document).ready(function () {
+                console.log("It is ready!!");
+                $("#savePur").click(function(){
+                    console.log("Save!");
+                    $.post("/saveJSON",
+                            {
+                                product: $("#product").val(),
+                                amount: $("#amount").val()
+                            },
+                            function(data, status){
+                                response = $.parseJSON(data);
+                                console.log(response.amount);
+                                console.log(response.product);
+                                console.log("Data: " + response + "\nStatus: " + status);
+                                $("#list").append('<li>' + response.product + ' Amount: ' + response.amount +'</li>')
+                            });
+                    return false;
+                });
+            });
+    </script>
+}
