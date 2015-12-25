@@ -5,6 +5,7 @@
 # Home page
 GET     /                           controllers.Application.index
 GET     /purchases                  controllers.Application.purchases()
+GET     /groupinfo                  controllers.Application.groupInfo(id: Int ?= 0)
 
 POST    /save                       controllers.Application.savePurchase
 POST    /saveJSON                   controllers.Application.savePurchaseJSON

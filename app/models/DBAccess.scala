@@ -28,4 +28,20 @@ object DBAccess {
       purchases
     }
   }
+
+  def getUsersInGroup(groupID: Int) = {
+    DB.withConnection { implicit c =>
+      val sql = SQL("select * from users where groupid={groupID};").on("groupID" -> groupID)
+      val users = sql().map(row => User(row)).toList
+      users
+    }
+  }
+
+  def getUser(login: String) = {
+    DB.withConnection { implicit c =>
+      val sql = SQL("select * from users where login={login};").on("login" -> login)
+      val user = User(sql().head)
+      user
+    }
+  }
 }

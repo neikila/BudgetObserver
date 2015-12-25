@@ -41,4 +41,17 @@ class Application extends Controller {
     Logic.savePurchase(purchase)
     Ok(purchase.toJson.toString())
   }
+
+  def groupInfo(id: Int) = Action {
+    val list = Logic.getUsersInGroup(id)
+    if (list.isEmpty) {
+      if (id == 0) {
+        Ok(views.html.error("Group info", "You haven't specified group id"))
+      } else {
+        Ok(views.html.error("Group info", "No group with id: " + id))
+      }
+    } else {
+      Ok(views.html.group("Group info", id, list))
+    }
+  }
 }

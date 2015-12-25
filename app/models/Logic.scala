@@ -11,4 +11,8 @@ object Logic {
   def savePurchase(purchase: Purchase) = {
     DBAccess.saveInDB(purchase)
   }
+
+  def getUsersInGroup(groupId: Int) = {
+    DBAccess.getUsersInGroup(groupId)
+  }
 }

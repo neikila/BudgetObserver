@@ -1,0 +1,10 @@
+@(message: String, groupId: Int, users: List[User])
+
+@main(message) {
+    <h2>Group number #@groupId</h2>
+    <ul id="list">
+    @for(user <- users) {
+        <li>Name: @user.name Surname:@user.surname</li>
+    }
+    </ul>
+}{ }
