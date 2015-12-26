@@ -19,24 +19,14 @@ class Application extends Controller {
     Ok(views.html.index("Your new application is ready."))
   }
 
-  case class PurchaseData(product: String, amount: Int)
-  private def getPurchaseForm = {
-    Form(
-      mapping(
-        "product" -> text,
-        "amount" -> number
-      )(PurchaseData.apply)(PurchaseData.unapply)
-    )
-  }
-
   def savePurchase = Action { implicit request =>
-    val userData = getPurchaseForm.bindFromRequest.get
+    val userData = Application.getPurchaseForm.bindFromRequest.get
     Logic.savePurchase(new Purchase(userData.product, userData.amount, "test", 1))
     Redirect(routes.Application.purchases())
   }
 
   def savePurchaseJSON = Action { implicit request =>
-    val userData = getPurchaseForm.bindFromRequest.get
+    val userData = Application.getPurchaseForm.bindFromRequest.get
     val purchase = new Purchase(userData.product, userData.amount, "test", 1)
     Logic.savePurchase(purchase)
     Ok(purchase.toJson.toString())
@@ -53,5 +43,17 @@ class Application extends Controller {
     } else {
       Ok(views.html.group("Group info", id, list))
     }
+  }
+}
+
+object Application {
+  case class PurchaseData(product: String, amount: Int)
+  def getPurchaseForm = {
+    Form(
+      mapping(
+        "product" -> text,
+        "amount" -> number
+      )(PurchaseData.apply)(PurchaseData.unapply)
+    )
   }
 }

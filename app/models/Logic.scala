@@ -16,11 +16,12 @@ object Logic {
     DBAccess.getUsersInGroup(groupId)
   }
 
-  def getGroupInfo(groupId: Int) = {
-    val userList = getUsersInGroup(groupId)
-    Map(
-      "users" -> userList,
-      "groupName" -> "testGroupName"
-    )
+  def getGroup(groupID: Int) = {
+    DBAccess.getGroup(groupID)
+  }
+
+  def createGroup(groupName: String, author: String) = {
+    DBAccess.createGroup(author, groupName)
+    DBAccess.includeUserInGroup(author, groupName)
   }
 }

@@ -10,7 +10,7 @@ import play.api.Play.current
 object DBAccess {
   def saveInDB(purchase: Purchase) = {
     DB.withConnection { implicit c =>
-      val result = SQL("insert into purchase(product, amount, login, groupID) " +
+      SQL("insert into purchase(product, amount, login, groupID) " +
         "values({productName}, {productAmount}, {login}, {groupID});")
         .on(
           "productName" -> purchase.productName,
@@ -48,6 +48,28 @@ object DBAccess {
     DB.withConnection { implicit c =>
       val sql = SQL("select * from groups where id={groupID};").on("groupID" -> id)
       Group(sql().head)
+    }
+  }
+
+  def createGroup(author: String, groupName: String) = {
+    DB.withConnection { implicit c =>
+      SQL("insert into groups (groupname, author) values({groupName}, {author});")
+        .on(
+          "groupName" -> groupName,
+          "author" -> author
+        ).executeUpdate
+    }
+  }
+
+  def includeUserInGroup(login: String, groupName: String) = {
+    DB.withConnection { implicit c =>
+      SQL(
+        "insert into usersToGroup(groupID, login) " +
+          "values((select id from groups where groupname={groupName} and author={author}),{author});"
+      ).on(
+        "groupName" -> groupName,
+        "author" -> login
+      ).executeUpdate()
     }
   }
 }
