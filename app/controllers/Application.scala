@@ -20,8 +20,12 @@ class Application extends Controller {
   }
 
   def getLoginPage = Action { request =>
-    request.session.get("session_id").map { user =>
-      Ok(views.html.purchases(user, Logic.getPurchases(user)))
+    request.session.get("session_id").map { sessionID =>
+      val result = Logic.getLoginBySessionID(sessionID)
+      result match {
+        case login: String => Ok(views.html.purchases(login, Logic.getPurchases(login)))
+        case _             => Ok(views.html.login("Login")).withNewSession
+      }
     }.getOrElse {
       Ok(views.html.login("Login"))
     }
@@ -31,7 +35,7 @@ class Application extends Controller {
     val loginData = Application.getLoginData.bindFromRequest.get
     if (Logic.auth(loginData.login, loginData.pass))
       Ok(views.html.purchases(loginData.login, Logic.getPurchases(loginData.login)))
-        .withSession(request.session + ("session_id" -> loginData.login))
+        .withSession(request.session + ("session_id" -> Logic.createSessionID(loginData.login)))
     else
       Ok(views.html.error("Login", "Wrong pass or login"))
   }
