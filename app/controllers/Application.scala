@@ -46,14 +46,25 @@ class Application extends Controller {
   def login = Action { implicit request =>
     val loginData = Application.getLoginData.bindFromRequest.get
     if (Logic.auth(loginData.login, loginData.pass))
-      Ok(views.html.purchases(loginData.login, Logic.getPurchases(loginData.login)))
-        .withSession(request.session + ("session_id" -> Logic.createSessionID(loginData.login)))
+      Logic.login(loginData.login) match {
+        case Some(session: String) =>
+          Ok(views.html.purchases(loginData.login, Logic.getPurchases(loginData.login)))
+            .withSession(request.session + ("session_id" -> session))
+        case _ =>
+          Ok(views.html.error("Login", "You are already authorised"))
+      }
     else
       Ok(views.html.error("Login", "Wrong pass or login"))
   }
 
-  def logout = Action {
-    Redirect(routes.Application.index()).withNewSession
+  def logout = Action { request =>
+    Logic.getLoginBySessionID(request.session.get("session_id")) match {
+      case login: String =>
+        Logic.logout(login)
+        Redirect(routes.Application.index())
+      case _ =>
+        Unauthorized(views.html.login("Login")).withNewSession
+    }
   }
 
   def savePurchase = Action { implicit request =>

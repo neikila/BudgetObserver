@@ -10,6 +10,9 @@ import scala.util.Random
   * Created by neikila on 25.12.15.
   */
 object Logic {
+  var mapSessionToLogin = new HashMap[String, String]
+  var mapLoginToSession = new HashMap[String, String]
+
   def getPurchases(username: String) = {
     DBAccess.getPurchases(username)
   }
@@ -39,15 +42,39 @@ object Logic {
     pass == DBAccess.getLoginData(login).password
   }
 
-  var mapSessionIdToMap = new HashMap[String, String]
+  def login(login: String): Option[Any] = {
+    val session = createSessionID(login)
+    if (addSession(session, login))
+      Some(session)
+    else
+      Some(None)
+  }
 
   def createSessionID(login: String) = {
     val user = DBAccess.getUser(login)
     val pass = DBAccess.getLoginData(login)
     val base = user.login + user.name + pass.password
-    val sessionID = shuffleString(Base64.getEncoder.encode(shuffleString(base).getBytes).toString)
-    mapSessionIdToMap += (sessionID -> login)
-    sessionID
+    shuffleString(Base64.getEncoder.encode(shuffleString(base).getBytes).toString)
+  }
+
+  def addSession(session: String, login: String) = {
+    if (mapSessionToLogin.contains(session) || mapLoginToSession.contains(login))
+      false
+    else {
+      mapSessionToLogin += (session -> login)
+      mapLoginToSession += (login -> session)
+      println("Map size: " + mapSessionToLogin.size)
+      true
+    }
+  }
+
+  def logout(login: String) = {
+    if (mapLoginToSession.contains(login)) {
+      val session = mapLoginToSession(login)
+      mapLoginToSession -= login
+      if (mapSessionToLogin.contains(session)) mapSessionToLogin -= session
+      println("Map size: " + mapSessionToLogin.size)
+    }
   }
 
   def shuffleString(string: String) = {
@@ -55,14 +82,13 @@ object Logic {
   }
 
   def getLoginBySessionID(sessionID: String) = {
-    if (mapSessionIdToMap.contains(sessionID)) mapSessionIdToMap(sessionID) else false
+    if (mapSessionToLogin.contains(sessionID)) mapSessionToLogin(sessionID) else false
   }
 
   def getLoginBySessionID(income: Any) = {
     income match {
-      case Some(sessionID: String) => if (mapSessionIdToMap.contains(sessionID)) mapSessionIdToMap(sessionID) else false
+      case Some(sessionID: String) => if (mapSessionToLogin.contains(sessionID)) mapSessionToLogin(sessionID) else false
       case _ => false
     }
   }
-
 }
