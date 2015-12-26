@@ -8,6 +8,10 @@ object Logic {
     DBAccess.getPurchases(username)
   }
 
+  def getAllPurchases = {
+    DBAccess.getAllPurchases
+  }
+
   def savePurchase(purchase: Purchase) = {
     DBAccess.saveInDB(purchase)
   }

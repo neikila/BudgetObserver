@@ -21,6 +21,13 @@ object DBAccess {
     }
   }
 
+  def getAllPurchases = {
+    DB.withConnection { implicit c =>
+      val sql = SQL("select * from purchase;")
+      sql().map(row => Purchase(row)).toList
+    }
+  }
+
   def getPurchases(login: String) = {
     DB.withConnection { implicit c =>
       val sql = SQL("select * from purchase;").on("login" -> login)
