@@ -28,4 +28,8 @@ object Logic {
     DBAccess.createGroup(author, groupName)
     DBAccess.includeUserInGroup(author, groupName)
   }
+
+  def auth(login: String, pass: String) = {
+    pass == DBAccess.getLoginData(login).password
+  }
 }

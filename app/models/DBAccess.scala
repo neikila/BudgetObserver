@@ -79,4 +79,11 @@ object DBAccess {
       ).executeUpdate()
     }
   }
+
+  def getLoginData(login: String) = {
+    DB.withConnection { implicit c =>
+      val sql = SQL("select * from login where login={login};").on("login" -> login)
+      Login(sql().head)
+    }
+  }
 }

@@ -10,13 +10,30 @@ import play.api.mvc._
 
 
 class Application extends Controller {
-  def purchases(username: String = "test") = Action {
+  def purchases(username: String = "test1") = Action {
     val list = Logic.getPurchases(username)
     Ok(views.html.purchases(username, list))
   }
 
   def index = Action {
     Ok(views.html.index("Your new application is ready."))
+  }
+
+  def getLoginPage = Action { request =>
+    request.session.get("session_id").map { user =>
+      Ok(views.html.purchases(user, Logic.getPurchases(user)))
+    }.getOrElse {
+      Ok(views.html.login("Login"))
+    }
+  }
+
+  def login = Action { implicit request =>
+    val loginData = Application.getLoginData.bindFromRequest.get
+    if (Logic.auth(loginData.login, loginData.pass))
+      Ok(views.html.purchases(loginData.login, Logic.getPurchases(loginData.login)))
+        .withSession(request.session + ("session_id" -> loginData.login))
+    else
+      Ok(views.html.error("Login", "Wrong pass or login"))
   }
 
   def savePurchase = Action { implicit request =>
@@ -54,6 +71,16 @@ object Application {
         "product" -> text,
         "amount" -> number
       )(PurchaseData.apply)(PurchaseData.unapply)
+    )
+  }
+
+  case class LoginData(login: String, pass: String)
+  def getLoginData = {
+    Form(
+      mapping(
+        "login" -> text,
+        "password" -> text
+      )(LoginData.apply)(LoginData.unapply)
     )
   }
 }

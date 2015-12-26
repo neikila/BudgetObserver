@@ -6,7 +6,9 @@
 GET     /                           controllers.Application.index
 GET     /purchases                  controllers.Application.purchases()
 GET     /groupinfo                  controllers.Application.groupInfo(id: Int ?= 0)
+GET     /login                      controllers.Application.getLoginPage
 
+POST    /login                      controllers.Application.login
 POST    /save                       controllers.Application.savePurchase
 POST    /saveJSON                   controllers.Application.savePurchaseJSON
 # Map static resources from the /public folder to the /assets URL path
