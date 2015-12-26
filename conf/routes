@@ -4,7 +4,7 @@
 
 # Home page
 GET     /                           controllers.Application.index
-GET     /purchases                  controllers.Application.purchases()
+GET     /purchases                  controllers.Application.purchases(username: Option[String])
 GET     /groupinfo                  controllers.Application.groupInfo(id: Int ?= 0)
 GET     /login                      controllers.Application.getLoginPage
 GET     /logout                     controllers.Application.logout

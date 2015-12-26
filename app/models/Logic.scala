@@ -57,4 +57,12 @@ object Logic {
   def getLoginBySessionID(sessionID: String) = {
     if (mapSessionIdToMap.contains(sessionID)) mapSessionIdToMap(sessionID) else false
   }
+
+  def getLoginBySessionID(income: Any) = {
+    income match {
+      case Some(sessionID: String) => if (mapSessionIdToMap.contains(sessionID)) mapSessionIdToMap(sessionID) else false
+      case _ => false
+    }
+  }
+
 }

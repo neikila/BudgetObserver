@@ -1,18 +1,33 @@
 package controllers
 
+import controllers.Application.PurchaseData
 import models.{Purchase, Logic, DBAccess}
 import play.api._
 import play.api.data._
 import play.api.data.Form
 import play.api.data.Forms._
-import play.api.libs.json.Json
+import play.api.libs.json.{JsPath, Reads, Json}
 import play.api.mvc._
-
+import play.api.libs.json._
+import play.api.libs.functional.syntax._
 
 class Application extends Controller {
-  def purchases(username: String = "test1") = Action {
-    val list = Logic.getPurchases(username)
-    Ok(views.html.purchases(username, list))
+
+  def purchases(username: Option[String]) = Action { request =>
+    username match {
+      case Some(username: String) =>
+        val list = Logic.getPurchases(username)
+        Ok(views.html.purchases(username, list))
+
+      case _ =>
+        Logic.getLoginBySessionID(request.session.get("session_id")) match {
+          case login: String =>
+            val list = Logic.getPurchases(login)
+            Ok(views.html.purchases(login, list))
+          case _ =>
+            Ok(views.html.login("Login")).withNewSession
+        }
+    }
   }
 
   def index = Action {
@@ -20,14 +35,11 @@ class Application extends Controller {
   }
 
   def getLoginPage = Action { request =>
-    request.session.get("session_id").map { sessionID =>
-      val result = Logic.getLoginBySessionID(sessionID)
-      result match {
-        case login: String => Ok(views.html.purchases(login, Logic.getPurchases(login)))
-        case _             => Ok(views.html.login("Login")).withNewSession
-      }
-    }.getOrElse {
-      Ok(views.html.login("Login"))
+    Logic.getLoginBySessionID(request.session.get("session_id")) match {
+      case login: String =>
+        Ok(views.html.purchases(login, Logic.getPurchases(login)))
+      case _ =>
+        Ok(views.html.login("Login")).withNewSession
     }
   }
 
@@ -45,16 +57,31 @@ class Application extends Controller {
   }
 
   def savePurchase = Action { implicit request =>
-    val userData = Application.getPurchaseForm.bindFromRequest.get
-    Logic.savePurchase(new Purchase(userData.product, userData.amount, "test", 1))
-    Redirect(routes.Application.purchases())
+    Logic.getLoginBySessionID(request.session.get("session_id")) match {
+      case login: String =>
+        val userData = Application.getPurchaseForm.bindFromRequest.get
+        Logic.savePurchase(new Purchase(userData.product, userData.amount, login, userData.groupID))
+        Redirect(routes.Application.purchases(None))
+      case _ =>
+        Unauthorized(views.html.login("Login")).withNewSession
+    }
   }
 
-  def savePurchaseJSON = Action { implicit request =>
-    val userData = Application.getPurchaseForm.bindFromRequest.get
-    val purchase = new Purchase(userData.product, userData.amount, "test", 1)
-    Logic.savePurchase(purchase)
-    Ok(purchase.toJson.toString())
+  def savePurchaseJSON = Action(BodyParsers.parse.json) { implicit request =>
+    Logic.getLoginBySessionID(request.session.get("session_id")) match {
+      case login: String =>
+        val userData = request.body.validate[Application.PurchaseData]
+        userData.fold(
+          error => BadRequest(Application.notAuthorised),
+          purchaseData => {
+            val purchase = new Purchase(purchaseData.product, purchaseData.amount, login, purchaseData.groupID)
+            Logic.savePurchase(purchase)
+            Ok(purchase.toJson)
+          }
+        )
+      case _ =>
+        Ok(Application.notAuthorised).withNewSession
+    }
   }
 
   def groupInfo(id: Int) = Action {
@@ -72,12 +99,20 @@ class Application extends Controller {
 }
 
 object Application {
-  case class PurchaseData(product: String, amount: Int)
+  val notAuthorisedCode = 1
+  implicit val placeReads: Reads[PurchaseData] = (
+    (JsPath \ "product") .read[String] and
+      (JsPath \ "amount").read[Int] and
+      (JsPath \ "groupID").read[Int]
+    )(PurchaseData.apply _)
+
+  case class PurchaseData(product: String, amount: Int, groupID: Int)
   def getPurchaseForm = {
     Form(
       mapping(
         "product" -> text,
-        "amount" -> number
+        "amount" -> number,
+        "groupID" -> number
       )(PurchaseData.apply)(PurchaseData.unapply)
     )
   }
@@ -89,6 +124,13 @@ object Application {
         "login" -> text,
         "password" -> text
       )(LoginData.apply)(LoginData.unapply)
+    )
+  }
+
+  def notAuthorised = {
+    Json.obj(
+      "error" -> "Not authorised",
+      "code" -> notAuthorisedCode
     )
   }
 }
