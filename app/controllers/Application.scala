@@ -31,13 +31,13 @@ class Application extends Controller {
 
   def savePurchase = Action { implicit request =>
     val userData = getPurchaseForm.bindFromRequest.get
-    Logic.savePurchase(new Purchase(userData.product, userData.amount, "test"))
+    Logic.savePurchase(new Purchase(userData.product, userData.amount, "test", 1))
     Redirect(routes.Application.purchases())
   }
 
   def savePurchaseJSON = Action { implicit request =>
     val userData = getPurchaseForm.bindFromRequest.get
-    val purchase = new Purchase(userData.product, userData.amount, "test")
+    val purchase = new Purchase(userData.product, userData.amount, "test", 1)
     Logic.savePurchase(purchase)
     Ok(purchase.toJson.toString())
   }

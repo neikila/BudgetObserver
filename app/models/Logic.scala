@@ -15,4 +15,12 @@ object Logic {
   def getUsersInGroup(groupId: Int) = {
     DBAccess.getUsersInGroup(groupId)
   }
+
+  def getGroupInfo(groupId: Int) = {
+    val userList = getUsersInGroup(groupId)
+    Map(
+      "users" -> userList,
+      "groupName" -> "testGroupName"
+    )
+  }
 }

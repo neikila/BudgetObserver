@@ -10,38 +10,44 @@ import play.api.Play.current
 object DBAccess {
   def saveInDB(purchase: Purchase) = {
     DB.withConnection { implicit c =>
-      val result = SQL("insert into purchase (product, amount, username) " +
-        "values({productName}, {productAmount}, {username});")
-        .on("productName" -> purchase.productName)
-        .on("productAmount" -> purchase.amount)
-        .on("username" -> purchase.username)
-        .executeUpdate()
+      val result = SQL("insert into purchase(product, amount, login, groupID) " +
+        "values({productName}, {productAmount}, {login}, {groupID});")
+        .on(
+          "productName" -> purchase.productName,
+          "productAmount" -> purchase.amount,
+          "login" -> purchase.login,
+          "groupID" -> purchase.groupID
+        ).executeUpdate()
     }
   }
 
-  def getPurchases(username: String) = {
+  def getPurchases(login: String) = {
     DB.withConnection { implicit c =>
-      val sql = SQL("select * from purchase;").on("username" -> username)
-      val purchases = sql().map(row =>
-        new Purchase(row[String]("product"), row[Int]("amount"), username)
-      ).toList
-      purchases
+      val sql = SQL("select * from purchase;").on("login" -> login)
+      sql().map(row => Purchase(row)).toList
     }
   }
 
   def getUsersInGroup(groupID: Int) = {
     DB.withConnection { implicit c =>
-      val sql = SQL("select * from users where groupid={groupID};").on("groupID" -> groupID)
-      val users = sql().map(row => User(row)).toList
-      users
+      val sql = SQL("select users.* from users join usersToGroup as UTG " +
+        "where users.login = UTG.login and groupID = {groupID};")
+        .on("groupID" -> groupID)
+      sql().map(row => User(row)).toList
     }
   }
 
   def getUser(login: String) = {
     DB.withConnection { implicit c =>
       val sql = SQL("select * from users where login={login};").on("login" -> login)
-      val user = User(sql().head)
-      user
+      User(sql().head)
+    }
+  }
+
+  def getGroup(id: Int) = {
+    DB.withConnection { implicit c =>
+      val sql = SQL("select * from groups where id={groupID};").on("groupID" -> id)
+      Group(sql().head)
     }
   }
 }
