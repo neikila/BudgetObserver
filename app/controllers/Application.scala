@@ -36,6 +36,10 @@ class Application extends Controller {
       Ok(views.html.error("Login", "Wrong pass or login"))
   }
 
+  def logout = Action {
+    Redirect(routes.Application.index()).withNewSession
+  }
+
   def savePurchase = Action { implicit request =>
     val userData = Application.getPurchaseForm.bindFromRequest.get
     Logic.savePurchase(new Purchase(userData.product, userData.amount, "test", 1))
