@@ -54,10 +54,13 @@ object DBAccess {
     }
   }
 
-  def getGroup(id: Int) = {
+  def getGroup(id: Int): Option[Any] = {
     DB.withConnection { implicit c =>
       val sql = SQL("select * from groups where id={groupID};").on("groupID" -> id)
-      Group(sql().head)
+      sql().headOption match {
+        case row: Row => Some(Group(row))
+        case _ => Some(None)
+      }
     }
   }
 
