@@ -38,23 +38,35 @@ object Logic {
     DBAccess.includeUserInGroup(author, groupName)
   }
 
-  def auth(login: String, pass: String) = {
-    pass == DBAccess.getLoginData(login).password
+  def auth(login: String, pass: String): Boolean = {
+    DBAccess.getLoginData(login) match {
+      case Some(logindData: Login) => logindData.password == pass
+      case _ => false
+    }
   }
 
   def login(login: String): Option[Any] = {
-    val session = createSessionID(login)
-    if (addSession(session, login))
-      Some(session)
-    else
-      Some(None)
+    createSessionID(login) match {
+      case Some(session: String) =>
+        if (addSession(session, login))
+          Some(session)
+        else
+          Some(None)
+      case _ => Some(None)
+    }
   }
 
-  def createSessionID(login: String) = {
-    val user = DBAccess.getUser(login)
-    val pass = DBAccess.getLoginData(login)
-    val base = user.login + user.name + pass.password
-    shuffleString(Base64.getEncoder.encode(shuffleString(base).getBytes).toString)
+  def createSessionID(login: String): Option[Any] = {
+    DBAccess.getUser(login) match {
+      case Some(user: User) =>
+        DBAccess.getLoginData(login) match {
+          case Some(pass: Login) =>
+            val base = user.login + user.name + pass.password
+            Some(shuffleString(Base64.getEncoder.encode(shuffleString(base).getBytes).toString))
+          case _ => Some(None)
+        }
+      case _ => Some(None)
+    }
   }
 
   def addSession(session: String, login: String) = {
