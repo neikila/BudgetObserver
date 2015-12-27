@@ -30,7 +30,7 @@ object DBAccess {
 
   def getPurchases(login: String) = {
     DB.withConnection { implicit c =>
-      val sql = SQL("select * from purchase;").on("login" -> login)
+      val sql = SQL("select * from purchase where login={login};").on("login" -> login)
       sql().map(row => Purchase(row)).toList
     }
   }
@@ -48,7 +48,7 @@ object DBAccess {
     DB.withConnection { implicit c =>
       val sql = SQL("select * from users where login={login};").on("login" -> login)
       sql().headOption match {
-        case row: Row => Some(User(row))
+        case Some(row: Row) => Some(User(row))
         case _ => Some(None)
       }
     }
@@ -58,7 +58,7 @@ object DBAccess {
     DB.withConnection { implicit c =>
       val sql = SQL("select * from groups where id={groupID};").on("groupID" -> id)
       sql().headOption match {
-        case row: Row => Some(Group(row))
+        case Some(row: Row) => Some(Group(row))
         case _ => Some(None)
       }
     }
@@ -88,9 +88,10 @@ object DBAccess {
 
   def getLoginData(login: String): Option[Any] = {
     DB.withConnection { implicit c =>
+      println("login: " + login)
       val sql = SQL("select * from login where login={login};").on("login" -> login)
       sql().headOption match {
-        case row: Row => Some(Login(row))
+        case Some(row: Row) => Some(Login(row))
         case _ => Some(None)
       }
     }

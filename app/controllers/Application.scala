@@ -1,6 +1,5 @@
 package controllers
 
-import controllers.Application.PurchaseData
 import models.{Purchase, Logic, DBAccess}
 import play.api._
 import play.api.data._
@@ -43,16 +42,28 @@ class Application extends Controller {
     }
   }
 
+  def getSignupPage = Action { request =>
+    Logic.getLoginBySessionID(request.session.get("session_id")) match {
+      case login: String => BadRequest("You are already authorised")
+      case _ => Ok(views.html.signup("Sign up page"))
+    }
+  }
+
   def signup = Action(BodyParsers.parse.json) { implicit request =>
     Logic.getLoginBySessionID(request.session.get("session_id")) match {
       case login: String =>
         Ok(Application.alreadyAuthorised)
       case _ =>
-        val userData = request.body.validate[Application.LoginData]
+        val userData = request.body.validate[Application.SignupData]
         userData.fold(
           error => BadRequest(Application.notAuthorised),
-          loginData => {
-            Redirect("/purchases")
+          signupData => {
+            Logic.createUser(signupData) match {
+              case Some(session: String) =>
+                Ok(Json.obj("code" -> "success"))
+                  .withSession(request.session + ("session_id" -> session))
+              case _ => BadRequest
+            }
           }
         )
     }
@@ -154,6 +165,11 @@ object Application {
       )(LoginData.apply)(LoginData.unapply)
     )
   }
+
+  implicit val loginReads: Reads[LoginData] = (
+    (JsPath \ "login") .read[String] and
+      (JsPath \ "password").read[String]
+    )(LoginData.apply _)
 
   case class SignupData(login: String, password: String, name: String, surname: String, email: String)
   def getSignUpData = {

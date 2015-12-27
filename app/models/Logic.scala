@@ -50,11 +50,16 @@ object Logic {
   def login(login: String): Option[Any] = {
     createSessionID(login) match {
       case Some(session: String) =>
-        if (addSession(session, login))
+        if (addSession(session, login)) {
+          println("test0")
           Some(session)
-        else
+        } else {
+          println("Test1")
           Some(None)
-      case _ => Some(None)
+        }
+      case _ =>
+        println("Test2")
+        Some(None)
     }
   }
 
@@ -65,9 +70,13 @@ object Logic {
           case Some(pass: Login) =>
             val base = user.login + user.name + pass.password
             Some(shuffleString(Base64.getEncoder.encode(shuffleString(base).getBytes).toString))
-          case _ => Some(None)
+          case _ =>
+            println("Test3")
+            Some(None)
         }
-      case _ => Some(None)
+      case _ =>
+        println("Test4")
+        Some(None)
     }
   }
 
