@@ -43,6 +43,21 @@ class Application extends Controller {
     }
   }
 
+  def signup = Action(BodyParsers.parse.json) { implicit request =>
+    Logic.getLoginBySessionID(request.session.get("session_id")) match {
+      case login: String =>
+        Ok(Application.alreadyAuthorised)
+      case _ =>
+        val userData = request.body.validate[Application.LoginData]
+        userData.fold(
+          error => BadRequest(Application.notAuthorised),
+          loginData => {
+            Redirect("/purchases")
+          }
+        )
+    }
+  }
+
   def login = Action { implicit request =>
     val loginData = Application.getLoginData.bindFromRequest.get
     if (Logic.auth(loginData.login, loginData.pass))
@@ -111,7 +126,9 @@ class Application extends Controller {
 
 object Application {
   val notAuthorisedCode = 1
-  implicit val placeReads: Reads[PurchaseData] = (
+  val alreadyAuthorisedCode = 2
+
+  implicit val purchaseReads: Reads[PurchaseData] = (
     (JsPath \ "product") .read[String] and
       (JsPath \ "amount").read[Int] and
       (JsPath \ "groupID").read[Int]
@@ -138,10 +155,38 @@ object Application {
     )
   }
 
+  case class SignupData(login: String, password: String, name: String, surname: String, email: String)
+  def getSignUpData = {
+    Form(
+      mapping(
+        "login" -> text,
+        "password" -> text,
+        "name" -> text,
+        "surname" -> text,
+        "email" -> text
+      )(SignupData.apply)(SignupData.unapply)
+    )
+  }
+
+  implicit val signupReads: Reads[SignupData] = (
+    (JsPath \ "login") .read[String] and
+      (JsPath \ "password").read[String] and
+      (JsPath \ "name").read[String] and
+      (JsPath \ "surname").read[String] and
+      (JsPath \ "email").read[String]
+    )(SignupData.apply _)
+
   def notAuthorised = {
     Json.obj(
       "error" -> "Not authorised",
       "code" -> notAuthorisedCode
+    )
+  }
+
+  def alreadyAuthorised = {
+    Json.obj(
+      "error" -> "Already authorised",
+      "code" -> alreadyAuthorisedCode
     )
   }
 }

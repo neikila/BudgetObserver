@@ -2,6 +2,8 @@ package models
 
 import java.util.Base64
 
+import controllers.Application.SignupData
+
 import scala.collection.immutable
 import scala.collection.immutable.HashMap
 import scala.util.Random
@@ -90,5 +92,11 @@ object Logic {
       case Some(sessionID: String) => if (mapSessionToLogin.contains(sessionID)) mapSessionToLogin(sessionID) else false
       case _ => false
     }
+  }
+
+  def createUser(signupData: SignupData) = {
+    DBAccess.saveUser(new User(signupData.login, signupData.name, signupData.surname, signupData.email))
+    DBAccess.saveLogin(new Login(signupData.login, signupData.password))
+    login(signupData.login)
   }
 }

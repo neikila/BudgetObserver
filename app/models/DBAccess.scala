@@ -86,4 +86,28 @@ object DBAccess {
       Login(sql().head)
     }
   }
+
+  def saveUser(user: User) = {
+    DB.withConnection { implicit c =>
+      SQL("insert into users(login, name, surname, email) " +
+        "values({login}, {name}, {surname}, {email});")
+        .on(
+          "login" -> user.login,
+          "name" -> user.name,
+          "surname" -> user.surname,
+          "email" -> user.email
+        ).executeUpdate
+    }
+  }
+
+  def saveLogin(login: Login) = {
+    DB.withConnection { implicit c =>
+      SQL("insert into login(login, password) " +
+        "values({login}, {password});")
+        .on(
+          "login" -> login.login,
+          "password" -> login.password
+        ).executeUpdate
+    }
+  }
 }
