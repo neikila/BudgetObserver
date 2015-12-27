@@ -44,10 +44,13 @@ object DBAccess {
     }
   }
 
-  def getUser(login: String) = {
+  def getUser(login: String): Option[Any] = {
     DB.withConnection { implicit c =>
       val sql = SQL("select * from users where login={login};").on("login" -> login)
-      User(sql().head)
+      sql().headOption match {
+        case row: Row => Some(User(row))
+        case _ => Some(None)
+      }
     }
   }
 
@@ -80,10 +83,13 @@ object DBAccess {
     }
   }
 
-  def getLoginData(login: String) = {
+  def getLoginData(login: String): Option[Any] = {
     DB.withConnection { implicit c =>
       val sql = SQL("select * from login where login={login};").on("login" -> login)
-      Login(sql().head)
+      sql().headOption match {
+        case row: Row => Some(Login(row))
+        case _ => Some(None)
+      }
     }
   }
 
