@@ -29,7 +29,9 @@ class Application extends Controller {
     }
   }
 
-  def index = Action {
+  def index = TODO
+
+  def documentation= Action {
     Ok(views.html.index("Your new application is ready."))
   }
 
@@ -74,7 +76,7 @@ class Application extends Controller {
     if (Logic.auth(loginData.login, loginData.pass))
       Logic.login(loginData.login) match {
         case Some(session: String) =>
-          Ok(views.html.purchases(loginData.login, Logic.getPurchases(loginData.login)))
+          Redirect(routes.Application.purchases(None))
             .withSession(request.session + ("session_id" -> session))
         case _ =>
           Ok(views.html.error("Login", "You are already authorised"))
@@ -140,28 +142,25 @@ class Application extends Controller {
     "#FDB45C",
     "#A716AA",
     "#B6677C",
-    "#D24AC5")
+    "#D24AC5"
+  )
 
   def getGroupPieData(groupID: Int) = Action { request =>
-    println(groupID)
-    var last = -1
-//    array.foreach((a: String) => println(a))
-//    DBAccess.getAllPurchases.groupBy(pur => pur.productName)
-//      .foreach((para: (String, List[Purchase])) => {
-//        val (product, list) = para
-//        list.sum()
-//      })
-    val result = Json.toJson(DBAccess.getGroupedProductFromGroup("test", 1).map(pur => {
-      last = (last + 1) % array.length
-      Json.obj(
-        "value" -> pur.amount,
-        "label" -> pur.productName,
-        "color" -> array(last),
-        "highlight" -> "#FFC870"
-      )
+    Logic.getLoginBySessionID(request.session.get("session_id")) match {
+      case login: String =>
+        var last = -1
+        Ok(Json.toJson(Logic.getGroupedProductFromGroup(login, 1).map(pur => {
+          last = (last + 1) % array.length
+          Json.obj(
+            "value" -> pur.amount,
+            "label" -> pur.productName,
+            "color" -> array(last),
+            "highlight" -> "#DFC870"
+          )
+        }
+        )))
+      case _ => Ok(Application.notAuthorised)
     }
-    ))
-    Ok(result)
   }
 }
 
@@ -234,5 +233,9 @@ object Application {
       "error" -> "Already authorised",
       "code" -> alreadyAuthorisedCode
     )
+  }
+
+  def getSessionID(request: Request[AnyContent]) = {
+    request.session.get("session_id")
   }
 }

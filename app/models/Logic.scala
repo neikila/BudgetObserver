@@ -120,4 +120,14 @@ object Logic {
     DBAccess.saveLogin(new Login(signupData.login, signupData.password))
     login(signupData.login)
   }
+
+  def getGroupedProductFromGroup(login: String, groupID: Int) = {
+    DBAccess.getGroupedProductFromGroup(login, groupID)
+    //    array.foreach((a: String) => println(a))
+    //    DBAccess.getAllPurchases.groupBy(pur => pur.productName)
+    //      .foreach((para: (String, List[Purchase])) => {
+    //        val (product, list) = para
+    //        list.sum()
+    //      })
+  }
 }
