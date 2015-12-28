@@ -35,66 +35,6 @@ class Application extends Controller {
     Ok(views.html.index("Your new application is ready."))
   }
 
-  def getLoginPage = Action { request =>
-    Logic.getLoginBySessionID(request.session.get("session_id")) match {
-      case login: String =>
-        Ok(views.html.purchases(login, Logic.getPurchases(login)))
-      case _ =>
-        Ok(views.html.login("Login")).withNewSession
-    }
-  }
-
-  def getSignupPage = Action { request =>
-    Logic.getLoginBySessionID(request.session.get("session_id")) match {
-      case login: String => BadRequest("You are already authorised")
-      case _ => Ok(views.html.signup("Sign up page"))
-    }
-  }
-
-  def signup = Action(BodyParsers.parse.json) { implicit request =>
-    Logic.getLoginBySessionID(request.session.get("session_id")) match {
-      case login: String =>
-        Ok(Application.alreadyAuthorised)
-      case _ =>
-        val userData = request.body.validate[Application.SignupData]
-        userData.fold(
-          error => BadRequest(Application.notAuthorised),
-          signupData => {
-            Logic.createUser(signupData) match {
-              case Some(session: String) =>
-                Ok(Json.obj("code" -> "success"))
-                  .withSession(request.session + ("session_id" -> session))
-              case _ => BadRequest
-            }
-          }
-        )
-    }
-  }
-
-  def login = Action { implicit request =>
-    val loginData = Application.getLoginData.bindFromRequest.get
-    if (Logic.auth(loginData.login, loginData.pass))
-      Logic.login(loginData.login) match {
-        case Some(session: String) =>
-          Redirect(routes.Application.purchases(None))
-            .withSession(request.session + ("session_id" -> session))
-        case _ =>
-          Ok(views.html.error("Login", "You are already authorised"))
-      }
-    else
-      Ok(views.html.error("Login", "Wrong pass or login"))
-  }
-
-  def logout = Action { request =>
-    Logic.getLoginBySessionID(request.session.get("session_id")) match {
-      case login: String =>
-        Logic.logout(login)
-        Redirect(routes.Application.index())
-      case _ =>
-        Unauthorized(views.html.login("Login")).withNewSession
-    }
-  }
-
   def savePurchase = Action { implicit request =>
     Logic.getLoginBySessionID(request.session.get("session_id")) match {
       case login: String =>
@@ -111,7 +51,7 @@ class Application extends Controller {
       case login: String =>
         val userData = request.body.validate[Application.PurchaseData]
         userData.fold(
-          error => BadRequest(Application.notAuthorised),
+          error => BadRequest(ErrorMessage.notAuthorised),
           purchaseData => {
             val purchase = new Purchase(purchaseData.product, purchaseData.amount, login, purchaseData.groupID)
             Logic.savePurchase(purchase)
@@ -119,7 +59,7 @@ class Application extends Controller {
           }
         )
       case _ =>
-        Ok(Application.notAuthorised).withNewSession
+        Ok(ErrorMessage.notAuthorised).withNewSession
     }
   }
 
@@ -159,14 +99,12 @@ class Application extends Controller {
           )
         }
         )))
-      case _ => Ok(Application.notAuthorised)
+      case _ => Ok(ErrorMessage.notAuthorised)
     }
   }
 }
 
 object Application {
-  val notAuthorisedCode = 1
-  val alreadyAuthorisedCode = 2
 
   implicit val purchaseReads: Reads[PurchaseData] = (
     (JsPath \ "product") .read[String] and
@@ -182,56 +120,6 @@ object Application {
         "amount" -> number,
         "groupID" -> number
       )(PurchaseData.apply)(PurchaseData.unapply)
-    )
-  }
-
-  case class LoginData(login: String, pass: String)
-  def getLoginData = {
-    Form(
-      mapping(
-        "login" -> text,
-        "password" -> text
-      )(LoginData.apply)(LoginData.unapply)
-    )
-  }
-
-  implicit val loginReads: Reads[LoginData] = (
-    (JsPath \ "login") .read[String] and
-      (JsPath \ "password").read[String]
-    )(LoginData.apply _)
-
-  case class SignupData(login: String, password: String, name: String, surname: String, email: String)
-  def getSignUpData = {
-    Form(
-      mapping(
-        "login" -> text,
-        "password" -> text,
-        "name" -> text,
-        "surname" -> text,
-        "email" -> text
-      )(SignupData.apply)(SignupData.unapply)
-    )
-  }
-
-  implicit val signupReads: Reads[SignupData] = (
-    (JsPath \ "login") .read[String] and
-      (JsPath \ "password").read[String] and
-      (JsPath \ "name").read[String] and
-      (JsPath \ "surname").read[String] and
-      (JsPath \ "email").read[String]
-    )(SignupData.apply _)
-
-  def notAuthorised = {
-    Json.obj(
-      "error" -> "Not authorised",
-      "code" -> notAuthorisedCode
-    )
-  }
-
-  def alreadyAuthorised = {
-    Json.obj(
-      "error" -> "Already authorised",
-      "code" -> alreadyAuthorisedCode
     )
   }
 

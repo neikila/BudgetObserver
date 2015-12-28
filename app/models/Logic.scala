@@ -2,7 +2,7 @@ package models
 
 import java.util.Base64
 
-import controllers.Application.SignupData
+import controllers.AuthController.SignupData
 
 import scala.collection.immutable
 import scala.collection.immutable.HashMap
