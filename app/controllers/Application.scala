@@ -1,6 +1,6 @@
 package controllers
 
-import models.{Purchase, Logic, DBAccess}
+import models.{User, Purchase, Logic, DBAccess}
 import play.api._
 import play.api.data._
 import play.api.data.Form
@@ -64,15 +64,13 @@ class Application extends Controller {
   }
 
   def groupInfo(id: Int) = Action {
-    val list = Logic.getUsersInGroup(id)
-    if (list.isEmpty) {
-      if (id == 0) {
-        Ok(views.html.error("Group info", "You haven't specified group id"))
-      } else {
-        Ok(views.html.error("Group info", "No group with id: " + id))
-      }
-    } else {
-      Ok(views.html.group("Group info", id, list))
+    Logic.getUsersInGroup(id) match {
+      case Some(list: List[User]) => Ok(views.html.group("Group info", id, list))
+      case _ =>
+          Ok(views.html.error("Group info", {
+            if (id == 0) "You haven't specified group id"
+            else "No group with id: " + id
+          }))
     }
   }
 
@@ -106,12 +104,6 @@ class Application extends Controller {
 
 object Application {
 
-  implicit val purchaseReads: Reads[PurchaseData] = (
-    (JsPath \ "product") .read[String] and
-      (JsPath \ "amount").read[Int] and
-      (JsPath \ "groupID").read[Int]
-    )(PurchaseData.apply _)
-
   case class PurchaseData(product: String, amount: Int, groupID: Int)
   def getPurchaseForm = {
     Form(
@@ -123,7 +115,9 @@ object Application {
     )
   }
 
-  def getSessionID(request: Request[AnyContent]) = {
-    request.session.get("session_id")
-  }
+  implicit val purchaseReads: Reads[PurchaseData] = (
+    (JsPath \ "product") .read[String] and
+      (JsPath \ "amount").read[Int] and
+      (JsPath \ "groupID").read[Int]
+    )(PurchaseData.apply _)
 }

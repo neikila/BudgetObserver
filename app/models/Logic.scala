@@ -27,8 +27,13 @@ object Logic {
     DBAccess.saveInDB(purchase)
   }
 
-  def getUsersInGroup(groupId: Int) = {
-    DBAccess.getUsersInGroup(groupId)
+  def getUsersInGroup(groupId: Int): Option[Any] = {
+    val list = DBAccess.getUsersInGroup(groupId)
+    if (list.size == 0) {
+      Some(None)
+    } else {
+      Some(list)
+    }
   }
 
   def getGroup(groupID: Int) = {

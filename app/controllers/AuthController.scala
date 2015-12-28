@@ -43,7 +43,7 @@ class AuthController extends Controller {
               case Some(session: String) =>
                 Ok(Json.obj("code" -> "success"))
                   .withSession(request.session + ("session_id" -> session))
-              case _ => BadRequest
+              case _ => BadRequest(ErrorMessage.errorWhileHandlingRequest)
             }
           }
         )
