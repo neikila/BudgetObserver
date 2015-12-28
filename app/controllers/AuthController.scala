@@ -77,22 +77,24 @@ class AuthController extends Controller {
 
 
 object AuthController {
-  case class LoginData(login: String, pass: String)
+  case class LoginData(login: String, pass: String, override val sessionID: Option[String]) extends IncomeData
   def getLoginData = {
     Form(
       mapping(
         "login" -> text,
-        "password" -> text
+        "password" -> text,
+        "session_id" -> optional(text)
       )(LoginData.apply)(LoginData.unapply)
     )
   }
 
   implicit val loginReads: Reads[LoginData] = (
     (JsPath \ "login") .read[String] and
-      (JsPath \ "password").read[String]
+      (JsPath \ "password").read[String] and
+      (JsPath \ "session_id") .readNullable[String]
     )(LoginData.apply _)
 
-  case class SignupData(login: String, password: String, name: String, surname: String, email: String)
+  case class SignupData(login: String, password: String, name: String, surname: String, email: String, override val sessionID: Option[String]) extends IncomeData
   def getSignUpData = {
     Form(
       mapping(
@@ -100,7 +102,8 @@ object AuthController {
         "password" -> text,
         "name" -> text,
         "surname" -> text,
-        "email" -> text
+        "email" -> text,
+        "session_id" -> optional(text)
       )(SignupData.apply)(SignupData.unapply)
     )
   }
@@ -110,6 +113,7 @@ object AuthController {
       (JsPath \ "password").read[String] and
       (JsPath \ "name").read[String] and
       (JsPath \ "surname").read[String] and
-      (JsPath \ "email").read[String]
+      (JsPath \ "email").read[String] and
+      (JsPath \ "session_id").readNullable[String]
     )(SignupData.apply _)
 }
