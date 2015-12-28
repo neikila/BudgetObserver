@@ -19,7 +19,7 @@ class Application extends Controller {
         Ok(views.html.purchases(username, list))
 
       case _ =>
-        Logic.getLoginBySessionID(request.session.get("session_id")) match {
+        Logic.getLoginBySessionID(Utils.getSessionID(request)) match {
           case login: String =>
             val list = Logic.getPurchases(login)
             Ok(views.html.purchases(login, list))
@@ -36,7 +36,7 @@ class Application extends Controller {
   }
 
   def savePurchase = Action { implicit request =>
-    Logic.getLoginBySessionID(request.session.get("session_id")) match {
+    Logic.getLoginBySessionID(Utils.getSessionID(request)) match {
       case login: String =>
         val userData = Application.getPurchaseForm.bindFromRequest.get
         Logic.savePurchase(new Purchase(userData.product, userData.amount, login, userData.groupID))
@@ -47,20 +47,19 @@ class Application extends Controller {
   }
 
   def savePurchaseJSON = Action(BodyParsers.parse.json) { implicit request =>
-    Logic.getLoginBySessionID(request.session.get("session_id")) match {
-      case login: String =>
-        val userData = request.body.validate[Application.PurchaseData]
-        userData.fold(
-          error => BadRequest(ErrorMessage.notAuthorised),
-          purchaseData => {
+    request.body.validate[Application.PurchaseData].fold(
+      error => BadRequest(ErrorMessage.notAuthorised),
+      purchaseData => {
+        Logic.getLoginBySessionID(Utils.getSessionID(request, purchaseData)) match {
+          case login: String =>
             val purchase = new Purchase(purchaseData.product, purchaseData.amount, login, purchaseData.groupID)
             Logic.savePurchase(purchase)
             Ok(purchase.toJson)
-          }
-        )
-      case _ =>
-        Ok(ErrorMessage.notAuthorised).withNewSession
-    }
+          case _ =>
+            Ok(ErrorMessage.notAuthorised).withNewSession
+        }
+      }
+    )
   }
 
   def groupInfo(id: Int) = Action {
@@ -84,7 +83,7 @@ class Application extends Controller {
   )
 
   def getGroupPieData(groupID: Int) = Action { request =>
-    Logic.getLoginBySessionID(request.session.get("session_id")) match {
+    Logic.getLoginBySessionID(Utils.getSessionID(request)) match {
       case login: String =>
         var last = -1
         Ok(Json.toJson(Logic.getGroupedProductFromGroup(login, 1).map(pur => {
@@ -104,13 +103,15 @@ class Application extends Controller {
 
 object Application {
 
-  case class PurchaseData(product: String, amount: Int, groupID: Int)
+  case class PurchaseData(product: String, amount: Int, groupID: Int, override val sessionID: Option[String] = None) extends IncomeData
+
   def getPurchaseForm = {
     Form(
       mapping(
         "product" -> text,
         "amount" -> number,
-        "groupID" -> number
+        "groupID" -> number,
+        "session_id" -> optional(text)
       )(PurchaseData.apply)(PurchaseData.unapply)
     )
   }
@@ -118,6 +119,7 @@ object Application {
   implicit val purchaseReads: Reads[PurchaseData] = (
     (JsPath \ "product") .read[String] and
       (JsPath \ "amount").read[Int] and
-      (JsPath \ "groupID").read[Int]
+      (JsPath \ "groupID").read[Int] and
+      (JsPath \ "session_id").readNullable[String]
     )(PurchaseData.apply _)
 }

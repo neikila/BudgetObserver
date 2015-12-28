@@ -9,25 +9,33 @@ object ErrorMessage {
   private val notAuthorisedCode = 1
   private val alreadyAuthorisedCode = 2
   private val errorWhileHandlingRequestCode = 3
+  private val notGroupMemberCode = 4
 
-  def notAuthorised = {
+  val notAuthorised = {
     Json.obj(
       "error" -> "Not authorised",
       "code" -> notAuthorisedCode
     )
   }
 
-  def alreadyAuthorised = {
+  val alreadyAuthorised = {
     Json.obj(
       "error" -> "Already authorised",
       "code" -> alreadyAuthorisedCode
     )
   }
 
-  def errorWhileHandlingRequest = {
+  val errorWhileHandlingRequest = {
     Json.obj(
       "error" -> "Server error",
       "code" -> errorWhileHandlingRequestCode
+    )
+  }
+
+  val notGroupMember = {
+    Json.obj(
+      "error" -> "Not a group member",
+      "code" -> notGroupMemberCode
     )
   }
 }

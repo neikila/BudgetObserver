@@ -49,6 +49,7 @@
                     return false;
                 });
 
+                var pieChart = null;
                 var func = function(num) {
                     $.ajax({
                         beforeSend: function(xhrObj){
@@ -68,7 +69,11 @@
                                 animationSteps: num,
                                 animationEasing: 'easeInOutQuart'
                             };
-                            new Chart(graph).Pie(pieData, pieOptions);
+                            if (pieChart == null) pieChart = new Chart(graph).Pie(pieData, pieOptions);
+                            else {
+                                pieChart.destroy();
+                                pieChart = new Chart(graph).Pie(pieData, pieOptions);
+                            }
                         }
                     });
                 };
