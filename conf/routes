@@ -9,6 +9,7 @@ GET     /groupinfo                  controllers.Application.groupInfo(id: Int ?=
 GET     /login                      controllers.Application.getLoginPage
 GET     /logout                     controllers.Application.logout
 GET     /signup                     controllers.Application.getSignupPage
+GET     /getGroupPieData            controllers.Application.getGroupPieData(groupID: Int)
 
 POST    /login                      controllers.Application.login
 POST    /signup                      controllers.Application.signup

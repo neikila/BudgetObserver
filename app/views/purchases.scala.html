@@ -8,13 +8,14 @@
         <li>@purchase.productName Amount:@purchase.amount</li>
     }
     </ul>
-
+    <canvas id="graph" width="600" height="400"></canvas>
     @helper.form(action = routes.Application.savePurchase()) {
         <input type="text" name="product" id="product"><br/>
         <input type="text" name="amount" id="amount"><br/>
         <input type="submit" value="submit" id="savePur">
     }
 }{
+    <script src="@routes.Assets.versioned("javascripts/Chart.js")" type="text/javascript"></script>
     <script type="text/javascript">
             $(document).ready(function () {
                 console.log("It is ready!!");
@@ -38,6 +39,59 @@
                     });
                     return false;
                 });
+
+                var func = function() {
+                    $.ajax({
+                        beforeSend: function(xhrObj){
+                            xhrObj.setRequestHeader("Content-Type","application/json;text/json;");
+                            xhrObj.setRequestHeader("Accept","application/json;text/json;");
+                        },
+                        type: "GET",
+                        url: "/getGroupPieData",
+                        data: {
+                            "groupID": 1
+                        },
+                        success: function(json){
+                            console.log(json);
+                            var graph = document.getElementById('graph').getContext('2d');
+                            var pieData = json;
+                            var pieOptions = {
+                                animationSteps: 100,
+                                animationEasing: 'easeInOutQuart'
+                            };
+                            new Chart(graph).Pie(pieData, pieOptions);
+                        }
+                    });
+                };
+                func();
+                //                var pieOptions = {
+//                    //Boolean - Whether we should show a stroke on each segment
+//                    segmentShowStroke : true,
+//
+//                    //String - The colour of each segment stroke
+//                    segmentStrokeColor : "#fff",
+//
+//                    //Number - The width of each segment stroke
+//                    segmentStrokeWidth : 2,
+//
+//                    //Number - The percentage of the chart that we cut out of the middle
+//                    percentageInnerCutout : 50, // This is 0 for Pie charts
+//
+//                    //Number - Amount of animation steps
+//                    animationSteps : 100,
+//
+//                    //String - Animation easing effect
+//                    animationEasing : "easeOutBounce",
+//
+//                    //Boolean - Whether we animate the rotation of the Doughnut
+//                    animateRotate : true,
+//
+//                    //Boolean - Whether we animate scaling the Doughnut from the centre
+//                    animateScale : false,
+//
+//                    //String - A legend template
+//                    legendTemplate : "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<segments.length; i++){%><li><span style=\"background-color:<%=segments[i].fillColor%>\"></span><%if(segments[i].label){%><%=segments[i].label%><%}%></li><%}%></ul>"
+//                };
             });
     </script>
 }

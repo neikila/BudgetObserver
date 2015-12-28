@@ -120,4 +120,18 @@ object DBAccess {
         ).executeUpdate
     }
   }
+
+  def getGroupedProductFromGroup(login: String, groupID: Int): List[Purchase] = {
+    DB.withConnection { implicit c =>
+      SQL("select product, login, groupID, SUM(amount) as amount from purchase " +
+        "where groupID = {groupID} and login = {login}" +
+        "group by product order by product;")
+        .on(
+          "groupID" -> groupID,
+          "login" -> login
+        )().map(row =>
+          new Purchase(row[String]("product"), row[java.math.BigDecimal]("amount").intValue(), row[String]("login"), row[Int]("groupID"))
+      ).toList
+    }
+  }
 }

@@ -133,6 +133,36 @@ class Application extends Controller {
       Ok(views.html.group("Group info", id, list))
     }
   }
+
+  val array = Array(
+    "#F7464A",
+    "#46BFBD",
+    "#FDB45C",
+    "#A716AA",
+    "#B6677C",
+    "#D24AC5")
+
+  def getGroupPieData(groupID: Int) = Action { request =>
+    println(groupID)
+    var last = -1
+//    array.foreach((a: String) => println(a))
+//    DBAccess.getAllPurchases.groupBy(pur => pur.productName)
+//      .foreach((para: (String, List[Purchase])) => {
+//        val (product, list) = para
+//        list.sum()
+//      })
+    val result = Json.toJson(DBAccess.getGroupedProductFromGroup("test", 1).map(pur => {
+      last = (last + 1) % array.length
+      Json.obj(
+        "value" -> pur.amount,
+        "label" -> pur.productName,
+        "color" -> array(last),
+        "highlight" -> "#FFC870"
+      )
+    }
+    ))
+    Ok(result)
+  }
 }
 
 object Application {
