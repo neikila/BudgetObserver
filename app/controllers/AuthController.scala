@@ -31,8 +31,7 @@ class AuthController extends Controller {
   }
 
   def signup = Action(BodyParsers.parse.json) { implicit request =>
-    val userData = request.body.validate[AuthController.SignupData]
-    userData.fold(
+    request.body.validate[AuthController.SignupData].fold(
       error => BadRequest(ErrorMessage.wrongFormat),
       signupData => {
         Logic.getLoginBySessionID(Utils.getSessionID(request, signupData)) match {
@@ -41,7 +40,7 @@ class AuthController extends Controller {
           case _ =>
             Logic.createUser(signupData) match {
               case Some(session: String) =>
-                Ok(Json.obj("code" -> "success"))
+                Ok(JSONResponse.success)
                   .withSession(request.session + (Utils.session_tag -> session))
               case _ => BadRequest(ErrorMessage.errorWhileHandlingRequest)
             }
@@ -62,6 +61,22 @@ class AuthController extends Controller {
       }
     else
       Ok(views.html.error("Login", "Wrong pass or login"))
+  }
+
+  def loginJSON = Action(BodyParsers.parse.json) { request =>
+    request.body.validate[AuthController.LoginData].fold(
+      error => Ok(ErrorMessage.wrongFormat),
+      loginData =>
+        if (Logic.auth(loginData.login, loginData.pass))
+          Logic.login(loginData.login) match {
+            case Some(session: String) =>
+              Ok(JSONResponse.success)
+                .withSession(request.session + (Utils.session_tag -> session))
+            case _ => Ok(ErrorMessage.alreadyAuthorised)
+          }
+        else
+          Ok(ErrorMessage.wrongAuth)
+    )
   }
 
   def logout = Action { request =>
