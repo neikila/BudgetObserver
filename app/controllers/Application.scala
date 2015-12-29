@@ -24,7 +24,7 @@ class Application extends Controller {
             val list = Logic.getPurchases(login)
             Ok(views.html.purchases(login, list))
           case _ =>
-            Ok(views.html.login("Login")).withNewSession
+            Redirect(routes.AuthController.login).withNewSession
         }
     }
   }
