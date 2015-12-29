@@ -1,4 +1,4 @@
-@(title: String)(content: Html)(header: Html)(script: Html)
+@(title: String, isLogged: Boolean)(content: Html)(header: Html)(script: Html)
 
 <!DOCTYPE html>
 
@@ -14,7 +14,7 @@
         @header
     </head>
     <body>
-        @navbar()
+        @navbar(isLogged)
         <div class="container">
             @content
         </div>

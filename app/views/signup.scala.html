@@ -1,6 +1,6 @@
 @(title: String)
 
-@main("Purchases") {
+@main("Registration page", isLogged = false) {
     <h1>Welcome to log in page!</h1>
 
     @helper.form(action = routes.AuthController.signup) {
@@ -29,4 +29,5 @@
                 });
             });
     </script>
+    <script type="text/javascript">$(document).xpathEvaluate("//a[text()='Signup']/..").addClass("active")</script>
 }

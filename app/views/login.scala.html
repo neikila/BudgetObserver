@@ -1,6 +1,6 @@
 @(title: String)
 
-@main("Sign in page") {
+@main("Sign in page", isLogged = false) {
     <div class="container">
         <form class="form-signin" action="@routes.AuthController.login" method="post">
             <h2 class="form-signin-heading">Please sign in</h2>
@@ -18,4 +18,6 @@
     </div>
 }{
     <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/login.css")">
-} { }
+} {
+    <script type="text/javascript">$(document).xpathEvaluate("//a[text()='Login']/..").addClass("active")</script>
+}
