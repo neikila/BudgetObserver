@@ -10,6 +10,7 @@ object ErrorMessage {
   private val alreadyAuthorisedCode = 2
   private val errorWhileHandlingRequestCode = 3
   private val notGroupMemberCode = 4
+  private val wrongFormatCode = 5
 
   val notAuthorised = {
     Json.obj(
@@ -36,6 +37,13 @@ object ErrorMessage {
     Json.obj(
       "error" -> "Not a group member",
       "code" -> notGroupMemberCode
+    )
+  }
+
+  val wrongFormat = {
+    Json.obj(
+      "error" -> "Wrong request format",
+      "code" -> wrongFormatCode
     )
   }
 }

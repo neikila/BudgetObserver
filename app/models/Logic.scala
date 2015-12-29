@@ -4,7 +4,6 @@ import java.util.Base64
 
 import controllers.AuthController.SignupData
 
-import scala.collection.immutable
 import scala.collection.immutable.HashMap
 import scala.util.Random
 
@@ -29,7 +28,7 @@ object Logic {
 
   def getUsersInGroup(groupId: Int): Option[Any] = {
     val list = DBAccess.getUsersInGroup(groupId)
-    if (list.size == 0) {
+    if (list isEmpty) {
       Some(None)
     } else {
       Some(list)
@@ -47,28 +46,24 @@ object Logic {
 
   def auth(login: String, pass: String): Boolean = {
     DBAccess.getLoginData(login) match {
-      case Some(logindData: Login) => logindData.password == pass
+      case Some(loginData: Login) => loginData.password == pass
       case _ => false
     }
   }
 
-  def login(login: String): Option[Any] = {
+  def login(login: String): Option[String] = {
     createSessionID(login) match {
       case Some(session: String) =>
-        if (addSession(session, login)) {
-          println("test0")
+        if (addSession(session, login))
           Some(session)
-        } else {
-          println("Test1")
-          Some(None)
-        }
+        else
+          None
       case _ =>
-        println("Test2")
-        Some(None)
+        None
     }
   }
 
-  def createSessionID(login: String): Option[Any] = {
+  def createSessionID(login: String): Option[String] = {
     DBAccess.getUser(login) match {
       case Some(user: User) =>
         DBAccess.getLoginData(login) match {
@@ -76,12 +71,10 @@ object Logic {
             val base = user.login + user.name + pass.password
             Some(shuffleString(Base64.getEncoder.encode(shuffleString(base).getBytes).toString))
           case _ =>
-            println("Test3")
-            Some(None)
+            None
         }
       case _ =>
-        println("Test4")
-        Some(None)
+        None
     }
   }
 
@@ -113,7 +106,7 @@ object Logic {
     if (mapSessionToLogin.contains(sessionID)) mapSessionToLogin(sessionID) else false
   }
 
-  def getLoginBySessionID(income: Any) = {
+  def getLoginBySessionID(income: Option[String]) = {
     income match {
       case Some(sessionID: String) => if (mapSessionToLogin.contains(sessionID)) mapSessionToLogin(sessionID) else false
       case _ => false

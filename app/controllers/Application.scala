@@ -99,6 +99,24 @@ class Application extends Controller {
       case _ => Ok(ErrorMessage.notAuthorised)
     }
   }
+
+  def createGroupJSON = Action(BodyParsers.parse.json) { request =>
+    request.body.validate[Application.GroupData].fold(
+      error => BadRequest(ErrorMessage.wrongFormat),
+      groupData => {
+        Logic.getLoginBySessionID(Utils.getSessionID(request, groupData)) match {
+          case login: String =>
+            Logic.createGroup(groupData.groupName, login)
+            Ok(Json.obj(
+              "groupName" -> groupData.groupName,
+              "author" -> login
+            ))
+          case _ =>
+            Ok(ErrorMessage.errorWhileHandlingRequest)
+        }
+      }
+    )
+  }
 }
 
 object Application {
@@ -122,4 +140,11 @@ object Application {
       (JsPath \ "groupID").read[Int] and
       (JsPath \ Utils.session_tag).readNullable[String]
     )(PurchaseData.apply _)
+
+  case class GroupData(groupName: String, override val sessionID: Option[String] = None) extends IncomeData
+
+  implicit val groupReads: Reads[GroupData] = (
+    (JsPath \ "groupName") .read[String] and
+      (JsPath \ Utils.session_tag).readNullable[String]
+    )(GroupData.apply _)
 }
