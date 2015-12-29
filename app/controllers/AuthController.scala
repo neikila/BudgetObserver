@@ -31,23 +31,23 @@ class AuthController extends Controller {
   }
 
   def signup = Action(BodyParsers.parse.json) { implicit request =>
-    Logic.getLoginBySessionID(request.session.get(Utils.session_tag)) match {
-      case login: String =>
-        Ok(ErrorMessage.alreadyAuthorised)
-      case _ =>
-        val userData = request.body.validate[AuthController.SignupData]
-        userData.fold(
-          error => BadRequest(ErrorMessage.notAuthorised),
-          signupData => {
+    val userData = request.body.validate[AuthController.SignupData]
+    userData.fold(
+      error => BadRequest(ErrorMessage.wrongFormat),
+      signupData => {
+        Logic.getLoginBySessionID(Utils.getSessionID(request, signupData)) match {
+          case login: String =>
+            Ok(ErrorMessage.alreadyAuthorised)
+          case _ =>
             Logic.createUser(signupData) match {
               case Some(session: String) =>
                 Ok(Json.obj("code" -> "success"))
                   .withSession(request.session + (Utils.session_tag -> session))
               case _ => BadRequest(ErrorMessage.errorWhileHandlingRequest)
             }
-          }
-        )
-    }
+        }
+      }
+    )
   }
 
   def login = Action { implicit request =>
