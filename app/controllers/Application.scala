@@ -111,7 +111,7 @@ object Application {
         "product" -> text,
         "amount" -> number,
         "groupID" -> number,
-        "session_id" -> optional(text)
+        Utils.session_tag -> optional(text)
       )(PurchaseData.apply)(PurchaseData.unapply)
     )
   }
@@ -120,6 +120,6 @@ object Application {
     (JsPath \ "product") .read[String] and
       (JsPath \ "amount").read[Int] and
       (JsPath \ "groupID").read[Int] and
-      (JsPath \ "session_id").readNullable[String]
+      (JsPath \ Utils.session_tag).readNullable[String]
     )(PurchaseData.apply _)
 }

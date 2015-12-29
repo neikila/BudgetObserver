@@ -15,7 +15,7 @@ import play.api.libs.functional.syntax._
   */
 class AuthController extends Controller {
   def getLoginPage = Action { request =>
-    Logic.getLoginBySessionID(request.session.get("session_id")) match {
+    Logic.getLoginBySessionID(Utils.getSessionID(request)) match {
       case login: String =>
         Ok(views.html.purchases(login, Logic.getPurchases(login)))
       case _ =>
@@ -24,14 +24,14 @@ class AuthController extends Controller {
   }
 
   def getSignupPage = Action { request =>
-    Logic.getLoginBySessionID(request.session.get("session_id")) match {
+    Logic.getLoginBySessionID(Utils.getSessionID(request)) match {
       case login: String => BadRequest("You are already authorised")
       case _ => Ok(views.html.signup("Sign up page"))
     }
   }
 
   def signup = Action(BodyParsers.parse.json) { implicit request =>
-    Logic.getLoginBySessionID(request.session.get("session_id")) match {
+    Logic.getLoginBySessionID(request.session.get(Utils.session_tag)) match {
       case login: String =>
         Ok(ErrorMessage.alreadyAuthorised)
       case _ =>
@@ -42,7 +42,7 @@ class AuthController extends Controller {
             Logic.createUser(signupData) match {
               case Some(session: String) =>
                 Ok(Json.obj("code" -> "success"))
-                  .withSession(request.session + ("session_id" -> session))
+                  .withSession(request.session + (Utils.session_tag -> session))
               case _ => BadRequest(ErrorMessage.errorWhileHandlingRequest)
             }
           }
@@ -56,7 +56,7 @@ class AuthController extends Controller {
       Logic.login(loginData.login) match {
         case Some(session: String) =>
           Redirect(routes.Application.purchases(None))
-            .withSession(request.session + ("session_id" -> session))
+            .withSession(request.session + (Utils.session_tag -> session))
         case _ =>
           Ok(views.html.error("Login", "You are already authorised"))
       }
@@ -65,7 +65,7 @@ class AuthController extends Controller {
   }
 
   def logout = Action { request =>
-    Logic.getLoginBySessionID(request.session.get("session_id")) match {
+    Logic.getLoginBySessionID(request.session.get(Utils.session_tag)) match {
       case login: String =>
         Logic.logout(login)
         Redirect(routes.Application.index())
@@ -83,7 +83,7 @@ object AuthController {
       mapping(
         "login" -> text,
         "password" -> text,
-        "session_id" -> optional(text)
+        Utils.session_tag -> optional(text)
       )(LoginData.apply)(LoginData.unapply)
     )
   }
@@ -91,7 +91,7 @@ object AuthController {
   implicit val loginReads: Reads[LoginData] = (
     (JsPath \ "login") .read[String] and
       (JsPath \ "password").read[String] and
-      (JsPath \ "session_id") .readNullable[String]
+      (JsPath \ Utils.session_tag) .readNullable[String]
     )(LoginData.apply _)
 
   case class SignupData(login: String, password: String, name: String, surname: String, email: String, override val sessionID: Option[String]) extends IncomeData
@@ -103,7 +103,7 @@ object AuthController {
         "name" -> text,
         "surname" -> text,
         "email" -> text,
-        "session_id" -> optional(text)
+        Utils.session_tag -> optional(text)
       )(SignupData.apply)(SignupData.unapply)
     )
   }
@@ -114,6 +114,6 @@ object AuthController {
       (JsPath \ "name").read[String] and
       (JsPath \ "surname").read[String] and
       (JsPath \ "email").read[String] and
-      (JsPath \ "session_id").readNullable[String]
+      (JsPath \ Utils.session_tag).readNullable[String]
     )(SignupData.apply _)
 }
