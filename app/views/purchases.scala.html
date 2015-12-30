@@ -51,7 +51,7 @@
                     }, function(json){
                         var num = $(document).xpathEvaluate("//table[contains(@@class, 'table')]/tbody/\*").size() + 1;
                         $(document).xpathEvaluate("//table[contains(@@class, 'table')]/tbody")
-                                .append("<tr><th scope='row'>" + num + "</th><td>" + json.productName + "</td><td>" + json.amount + "</td></tr>");
+                                .append("<tr><th scope='row'>" + num + "</th><td>" + json.product + "</td><td>" + json.amount + "</td></tr>");
                         func(0);
                     });
                     return false;
