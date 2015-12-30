@@ -3,14 +3,14 @@
 @main("Purchases", isLogged = true) {
     <h1>Welcome @(customer)!</h1>
 
-    <table style="width: 100%">
-        <tr>
-            <td>
-                @helper.form(action = routes.Application.savePurchase()) {
-                    <input type="text" name="product" id="product"><br/>
-                    <input type="text" name="amount" id="amount"><br/>
-                    <input type="submit" value="submit" id="savePur">
-                }
+    @helper.form(action = routes.Application.savePurchase()) {
+        <input type="text" name="product" id="product"><br/>
+        <input type="text" name="amount" id="amount"><br/>
+        <input type="submit" value="submit" id="savePur">
+    }
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-5">
                 <div class="panel panel-default">
                     <div class="panel-heading">Purchases</div>
                     <table class="table">
@@ -22,22 +22,22 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @for(i <- purchases.indices) {
-                                <tr>
-                                    <th scope="row">@(i + 1)</th>
-                                    <td>@purchases(i).productName</td>
-                                    <td>@purchases(i).amount</td>
-                                </tr>
-                            }
+                        @for(i <- purchases.indices.reverse) {
+                            <tr>
+                                <th scope="row">@(i + 1)</th>
+                                <td>@purchases(i).productName</td>
+                                <td>@purchases(i).amount</td>
+                            </tr>
+                        }
                         </tbody>
                     </table>
                 </div>
-            </td>
-            <td>
+            </div>
+            <div class="col-md-7">
                 <canvas id="graph" width="600" height="400"></canvas>
-            </td>
-        </tr>
-    </table>
+            </div>
+        </div>
+    </div>
 }{ } {
     <script src="@routes.Assets.versioned("javascripts/Chart.js")" type="text/javascript"></script>
     <script type="text/javascript">
@@ -50,8 +50,10 @@
                         "groupID": 1
                     }, function(json){
                         var num = $(document).xpathEvaluate("//table[contains(@@class, 'table')]/tbody/\*").size() + 1;
-                        $(document).xpathEvaluate("//table[contains(@@class, 'table')]/tbody")
-                                .append("<tr><th scope='row'>" + num + "</th><td>" + json.product + "</td><td>" + json.amount + "</td></tr>");
+                        $("<tr><th scope='row'>" + num + "</th><td>" + json.product + "</td><td>" + json.amount + "</td></tr>")
+                                .insertBefore($(document).xpathEvaluate("//table[contains(@@class, 'table')]/tbody/\*[1]"));
+                        @*$(document).xpathEvaluate("//table[contains(@@class, 'table')]/tbody")
+                                .append("<tr><th scope='row'>" + num + "</th><td>" + json.product + "</td><td>" + json.amount + "</td></tr>"); *@
                         func(0);
                     });
                     return false;
