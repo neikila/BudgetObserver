@@ -17,7 +17,8 @@ class AuthController extends Controller {
   def getLoginPage = Action { request =>
     Logic.getLoginBySessionID(Utils.getSessionID(request)) match {
       case login: String =>
-        Ok(views.html.app.purchases(login, Logic.getPurchases(login)))
+        Redirect(routes.Application.purchases)
+//        Ok(views.html.app.purchases(login, Logic.getPurchases(login)))
       case _ =>
         Ok(views.html.auth.login("Login")).withNewSession
     }
@@ -54,7 +55,7 @@ class AuthController extends Controller {
     if (Logic.auth(loginData.login, loginData.pass))
       Logic.login(loginData.login) match {
         case Some(session: String) =>
-          Redirect(routes.Application.purchases(None))
+          Redirect(routes.Application.purchases)
             .withSession(request.session + (Utils.session_tag -> session))
         case _ =>
           Ok(views.html.incl.error("Login", "You are already authorised"))
@@ -83,7 +84,7 @@ class AuthController extends Controller {
     Logic.getLoginBySessionID(request.session.get(Utils.session_tag)) match {
       case login: String =>
         Logic.logout(login)
-        Redirect(routes.Application.index())
+        Redirect(routes.Application.index)
       case _ =>
         Unauthorized(views.html.auth.login("Login")).withNewSession
     }

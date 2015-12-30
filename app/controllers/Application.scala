@@ -12,20 +12,13 @@ import play.api.libs.functional.syntax._
 
 class Application extends Controller {
 
-  def purchases(username: Option[String]) = Action { request =>
-    username match {
-      case Some(username: String) =>
-        val list = Logic.getPurchases(username)
-        Ok(views.html.app.purchases(username, list))
-
+  def purchases = Action { request =>
+    Logic.getLoginBySessionID(Utils.getSessionID(request)) match {
+      case login: String =>
+        val list = Logic.getPurchases(login)
+        Ok(views.html.app.purchases(login, list))
       case _ =>
-        Logic.getLoginBySessionID(Utils.getSessionID(request)) match {
-          case login: String =>
-            val list = Logic.getPurchases(login)
-            Ok(views.html.app.purchases(login, list))
-          case _ =>
-            Redirect(routes.AuthController.getLoginPage).withNewSession
-        }
+        Redirect(routes.AuthController.getLoginPage).withNewSession
     }
   }
 
@@ -42,7 +35,7 @@ class Application extends Controller {
       case login: String =>
         val userData = Application.getPurchaseForm.bindFromRequest.get
         Logic.savePurchase(new Purchase(userData.product, userData.amount, login, userData.groupID))
-        Redirect(routes.Application.purchases(None))
+        Redirect(routes.Application.purchases)
       case _ =>
         Unauthorized(views.html.auth.login("Login")).withNewSession
     }
