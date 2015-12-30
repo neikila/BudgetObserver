@@ -32,7 +32,7 @@
             <ul class="nav navbar-nav navbar-right">
                 @*<li class="active"><a href="/groups">Groups</a></li>*@
                 @if(isLogged) {
-                    <li><a>Logout</a></li>
+                    <li><a href="@routes.AuthController.logout">Logout</a></li>
                 } else {
                     <li><a href="@routes.AuthController.login">Login</a></li>
                     <li><a href="@routes.AuthController.signup">Signup</a></li>
