@@ -1,6 +1,6 @@
 @(customer: String, purchases: List[Purchase])
 
-@main("Purchases", isLogged = true) {
+@incl.main("Purchases", isLogged = true) {
     <h1>Welcome @(customer)!</h1>
 
     @helper.form(action = routes.Application.savePurchase()) {

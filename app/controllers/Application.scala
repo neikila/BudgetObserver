@@ -16,23 +16,25 @@ class Application extends Controller {
     username match {
       case Some(username: String) =>
         val list = Logic.getPurchases(username)
-        Ok(views.html.purchases(username, list))
+        Ok(views.html.app.purchases(username, list))
 
       case _ =>
         Logic.getLoginBySessionID(Utils.getSessionID(request)) match {
           case login: String =>
             val list = Logic.getPurchases(login)
-            Ok(views.html.purchases(login, list))
+            Ok(views.html.app.purchases(login, list))
           case _ =>
-            Redirect(routes.AuthController.login).withNewSession
+            Redirect(routes.AuthController.getLoginPage).withNewSession
         }
     }
   }
 
-  def index = TODO
+  def index = Action {
+    Redirect(routes.AuthController.getLoginPage)
+  }
 
   def documentation= Action {
-    Ok(views.html.index("Your new application is ready."))
+    Ok(views.html.app.index("Your new application is ready."))
   }
 
   def savePurchase = Action { implicit request =>
@@ -42,7 +44,7 @@ class Application extends Controller {
         Logic.savePurchase(new Purchase(userData.product, userData.amount, login, userData.groupID))
         Redirect(routes.Application.purchases(None))
       case _ =>
-        Unauthorized(views.html.login("Login")).withNewSession
+        Unauthorized(views.html.auth.login("Login")).withNewSession
     }
   }
 
@@ -64,9 +66,9 @@ class Application extends Controller {
 
   def groupInfo(id: Int) = Action {
     Logic.getUsersInGroup(id) match {
-      case Some(list: List[User]) => Ok(views.html.group("Group info", id, list))
+      case Some(list: List[User]) => Ok(views.html.app.group("Group info", id, list))
       case _ =>
-          Ok(views.html.error("Group info", {
+          Ok(views.html.incl.error("Group info", {
             if (id == 0) "You haven't specified group id"
             else "No group with id: " + id
           }))

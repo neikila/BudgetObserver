@@ -17,16 +17,16 @@ class AuthController extends Controller {
   def getLoginPage = Action { request =>
     Logic.getLoginBySessionID(Utils.getSessionID(request)) match {
       case login: String =>
-        Ok(views.html.purchases(login, Logic.getPurchases(login)))
+        Ok(views.html.app.purchases(login, Logic.getPurchases(login)))
       case _ =>
-        Ok(views.html.login("Login")).withNewSession
+        Ok(views.html.auth.login("Login")).withNewSession
     }
   }
 
   def getSignupPage = Action { request =>
     Logic.getLoginBySessionID(Utils.getSessionID(request)) match {
       case login: String => BadRequest("You are already authorised")
-      case _ => Ok(views.html.signup("Sign up page"))
+      case _ => Ok(views.html.auth.signup("Sign up page"))
     }
   }
 
@@ -57,10 +57,10 @@ class AuthController extends Controller {
           Redirect(routes.Application.purchases(None))
             .withSession(request.session + (Utils.session_tag -> session))
         case _ =>
-          Ok(views.html.error("Login", "You are already authorised"))
+          Ok(views.html.incl.error("Login", "You are already authorised"))
       }
     else
-      Ok(views.html.error("Login", "Wrong pass or login"))
+      Ok(views.html.incl.error("Login", "Wrong pass or login"))
   }
 
   def loginJSON = Action(BodyParsers.parse.json) { request =>
@@ -85,7 +85,7 @@ class AuthController extends Controller {
         Logic.logout(login)
         Redirect(routes.Application.index())
       case _ =>
-        Unauthorized(views.html.login("Login")).withNewSession
+        Unauthorized(views.html.auth.login("Login")).withNewSession
     }
   }
 }

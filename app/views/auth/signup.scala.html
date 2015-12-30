@@ -1,6 +1,6 @@
 @(title: String)
 
-@main("Registration page", isLogged = false) {
+@incl.main("Registration page", isLogged = false) {
     <h1>Welcome to registration page!</h1>
 
     @helper.form(action = routes.AuthController.signup) {
