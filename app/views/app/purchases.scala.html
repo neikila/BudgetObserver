@@ -8,7 +8,7 @@
                 <div class="dropdown">
                     <div data-toggle="dropdown">
                     @*<div class="input-group" data-toggle="dropdown">*@
-                        <input class="entryInput form-control" id="product" name="product" type="text" autocomplete="off"/>
+                        <input class="entryInput form-control" id="product" name="product" type="text" autocomplete="off" placeholder="Product"/>
                         @*<span class="input-group-btn">*@
                             @*<button id="cancelQuery" class="btn btn-default" type="button">X</button>*@
                         @*</span>*@
@@ -20,7 +20,7 @@
         </div>
         <div class="row">
             <div class="col-xs-4">
-                <input class="entryInput form-control" id="amount" name="amount" type="text" autocomplete="off"/>
+                <input class="entryInput form-control" id="amount" name="amount" type="text" autocomplete="off" placeholder="Amount"/>
             </div>
         </div>
         <input type="submit" value="submit" id="savePur">
@@ -60,6 +60,7 @@
     <script src="@routes.Assets.versioned("javascripts/Chart.js")" type="text/javascript"></script>
     <script type="text/javascript">
             $(document).ready(function () {
+                $("ul.navbar-right p a").text("@(customer)");
                 console.log("It is ready!!");
                 $("#savePur").click(function(){
                     postJSON("/saveJSON", {
