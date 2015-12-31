@@ -1,13 +1,31 @@
 @(customer: String, purchases: List[Purchase])
 
 @incl.main("Purchases", isLogged = true) {
-    <h1>Welcome @(customer)!</h1>
+    <h1 xmlns="http://www.w3.org/1999/html">Welcome @(customer)!</h1>
+    <form class="form-signin" action="@routes.Application.savePurchase" method="post">
+        <div class="row">
+            <div class="col-xs-4">
+                <div class="dropdown">
+                    <div data-toggle="dropdown">
+                    @*<div class="input-group" data-toggle="dropdown">*@
+                        <input class="entryInput form-control" id="product" name="product" type="text" autocomplete="off"/>
+                        @*<span class="input-group-btn">*@
+                            @*<button id="cancelQuery" class="btn btn-default" type="button">X</button>*@
+                        @*</span>*@
+                    </div>
 
-    @helper.form(action = routes.Application.savePurchase()) {
-        <input type="text" name="product" id="product"><br/>
-        <input type="text" name="amount" id="amount"><br/>
+                    <ul class="dropdown-menu" role="menu" aria-labelledby="product"></ul>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-4">
+                <input class="entryInput form-control" id="amount" name="amount" type="text" autocomplete="off"/>
+            </div>
+        </div>
         <input type="submit" value="submit" id="savePur">
-    }
+    </form>
+    <br>
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-5">
@@ -49,12 +67,12 @@
                         "amount": Number($("#amount").val()),
                         "groupID": 1
                     }, function(json){
-                        var num = $(document).xpathEvaluate("//table[contains(@@class, 'table')]/tbody/\*").size() + 1;
+                        var num = $(document).xpathEvaluate("//table[contains(\@@class, 'table')]/tbody/\*").size() + 1;
                         if (num != 1) {
                         $("<tr><th scope='row'>" + num + "</th><td>" + json.product + "</td><td>" + json.amount + "</td></tr>")
-                                .insertBefore($(document).xpathEvaluate("//table[contains(@@class, 'table')]/tbody/\*[1]"));
+                                .insertBefore($(document).xpathEvaluate("//table[contains(\@@class, 'table')]/tbody/\*[1]"));
                         } else {
-                            $(document).xpathEvaluate("//table[contains(@@class, 'table')]/tbody")
+                            $(document).xpathEvaluate("//table[contains(\@@class, 'table')]/tbody")
                                     .append("<tr><th scope='row'>" + num + "</th><td>" + json.product + "</td><td>" + json.amount + "</td></tr>");
                         }
                         func(0);
@@ -78,11 +96,16 @@
                                 animationEasing: 'easeInOutQuart'
 //                                animationEasing: 'easeOutBounce'
                             };
-                            if (pieChart == null) pieChart = new Chart(graph).Pie(pieData, pieOptions);
-                            else {
+                            if (pieChart != null) {
                                 pieChart.destroy();
-                                pieChart = new Chart(graph).Pie(pieData, pieOptions);
                             }
+                            pieChart = new Chart(graph).Pie(pieData, pieOptions);
+                            var list = $(document).xpathEvaluate("//ul[\@@aria-labelledby='product']");
+                            list.empty();
+                            json.forEach(function(group) {
+                                list.append("<li><a class='result' data-id='{{_id}}'>" + group.label + "</a></li>");
+                            });
+                            $(document).xpathEvaluate("//ul[\@@aria-labelledby='product']/li").click(function() {$("#product").val($(this).children().text())});
                         }
                     });
                 };

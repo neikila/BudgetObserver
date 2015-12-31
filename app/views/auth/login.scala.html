@@ -3,10 +3,12 @@
 @incl.main("Sign in page", isLogged = false) {
     <form class="form-signin" action="@routes.AuthController.login" method="post">
         <h2 class="form-signin-heading">Please sign in</h2>
+
         <label for="login" class="sr-only">User login</label>
-        <input type="text" id="login" name="login" class="form-control" placeholder="Login" required="" autofocus="">
+        <input type="text" id="login" name="login" class="form-control" placeholder="Login" required="" autofocus="" autocomplete="off">
+
         <label for="password" class="sr-only">Password</label>
-        <input type="password" id="password" name="password" class="form-control margin-bottom" placeholder="Password" required="">
+        <input type="password" id="password" name="password" class="form-control margin-bottom" placeholder="Password" required="" autocomplete="off">
         <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
     </form>
 }{
