@@ -10,7 +10,7 @@
         <label for="password" class="sr-only">Password</label>
         <input type="password" id="password" name="password" class="form-control" placeholder="Password" required="" autocomplete="off">
         <label for="password" class="sr-only">Password</label>
-        <input type="password" id="password_repeat" name="password" class="form-control margin-bottom" placeholder="Password repeat" required="" autocomplete="off">
+        <input type="password" id="password_repeat" name="password_repeat" class="form-control margin-bottom" placeholder="Password repeat" required="" autocomplete="off">
 
         <label for="name" class="sr-only">Name</label>
         <input type="text" id="name" name="name" class="form-control" placeholder="Name" required="" autocomplete="off">
@@ -18,7 +18,7 @@
         <input type="text" id="surname" name="surname" class="form-control" placeholder="Surname" required="" autocomplete="off">
 
         <label for="email" class="sr-only">Email</label>
-        <input type="email" id="email" name="email" class="form-control margin-bottom" placeholder="email@@gmail.com" required="" autocomplete="off">
+        <input type="email" id="email" name="email" class="form-control margin-bottom" placeholder="email@@mail.ru" required="" autocomplete="off">
 
         <div class="alert alert-danger" role="alert" style="display: none;">
             <strong>Oh snap!</strong> Someone are already using this login.
@@ -29,12 +29,14 @@
 } {
     <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/login.css")">
 } {
-    <script>
+    <script type="text/javascript">
             $(document).ready(function () {
+                $(document).xpathEvaluate("//a[contains(text(),'Signup')]/..").addClass("active")
                 $("#signup_but").click(function(){
                     postJSON("@routes.AuthController.signup", {
                         "login": $("#login").val(),
                         "password": $("#password").val(),
+                        "password_repeat": $("#password_repeat").val(),
                         "name": $("#name").val(),
                         "surname": $("#surname").val(),
                         "email": $("#email").val()
@@ -47,7 +49,7 @@
                             } else {
                                 errorEl.slideUp("fast", function() {
                                     errorEl.empty();
-                                    errorEl.append("<strong>No, no! </strong>It is still busy.");
+                                    errorEl.append("<strong>No, no! </strong>This one is busy too.");
                                     errorEl.slideDown("slow");
                                 });
                             }
@@ -59,5 +61,4 @@
                 });
             });
     </script>
-    <script type="text/javascript">$(document).xpathEvaluate("//a[contains(text(),'Signup')]/..").addClass("active")</script>
 }
