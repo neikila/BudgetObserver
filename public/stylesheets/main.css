@@ -19,3 +19,8 @@ html {
     height: 30px;
     background-color: #f5f5f5;
 }
+
+.pieholder {
+    text-align: center;
+    width: 100%;
+}

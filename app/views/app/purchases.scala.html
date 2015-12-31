@@ -52,7 +52,9 @@
                 </div>
             </div>
             <div class="col-md-7">
-                <canvas id="graph" width="600" height="400"></canvas>
+                <div class="pieholder">
+                    <canvas id="graph"></canvas>
+                </div>
             </div>
         </div>
     </div>
@@ -60,6 +62,13 @@
     <script src="@routes.Assets.versioned("javascripts/Chart.js")" type="text/javascript"></script>
     <script type="text/javascript">
             $(document).ready(function () {
+                var pie = $("canvas");
+                var pieLength = $("div.pieholder").width();
+                if (pieLength > 400) {
+                    pieLength = 400
+                }
+                pie.attr("width", pieLength);
+                pie.attr("height", pieLength);
                 $("ul.navbar-right p a").text("@(customer)");
                 console.log("It is ready!!");
                 $("#savePur").click(function(){
