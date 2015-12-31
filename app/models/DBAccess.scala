@@ -44,12 +44,12 @@ object DBAccess {
     }
   }
 
-  def getUser(login: String): Option[Any] = {
+  def getUser(login: String): Option[User] = {
     DB.withConnection { implicit c =>
       val sql = SQL("select * from users where login={login};").on("login" -> login)
       sql().headOption match {
         case Some(row: Row) => Some(User(row))
-        case _ => Some(None)
+        case _ => None
       }
     }
   }

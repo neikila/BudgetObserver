@@ -43,6 +43,7 @@ class AuthController extends Controller {
               case Some(session: String) =>
                 Ok(JSONResponse.success)
                   .withSession(request.session + (Utils.session_tag -> session))
+              case Some(false) => Ok(ErrorMessage.suchUserExist)
               case _ => BadRequest(ErrorMessage.errorWhileHandlingRequest)
             }
         }

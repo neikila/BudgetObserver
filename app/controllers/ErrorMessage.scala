@@ -12,6 +12,7 @@ object ErrorMessage {
   private val notGroupMemberCode = 4
   private val wrongFormatCode = 5
   private val wrongAuthCode = 6
+  private val suchUserExistCode = 7
 
   val notAuthorised = {
     Json.obj(
@@ -52,6 +53,13 @@ object ErrorMessage {
     Json.obj(
       "error" -> "Wrong pass or login",
       "code" -> wrongAuthCode
+    )
+  }
+
+  val suchUserExist = {
+    Json.obj(
+      "error" -> "This login isn't available",
+      "code" -> suchUserExistCode
     )
   }
 }

@@ -35,7 +35,12 @@
                         "surname": $("#surname").val(),
                         "email": $("#email").val()
                     }, function(json){
-                        window.location.replace("/purchases");
+                        console.log(json);
+                        if ('error' in json) {
+                            alert("Not available")
+                        } else {
+                            window.location.replace("/purchases");
+                        }
                     });
                     return false;
                 });

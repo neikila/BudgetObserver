@@ -113,10 +113,15 @@ object Logic {
     }
   }
 
-  def createUser(signupData: SignupData) = {
-    DBAccess.saveUser(new User(signupData.login, signupData.name, signupData.surname, signupData.email))
-    DBAccess.saveLogin(new Login(signupData.login, signupData.password))
-    login(signupData.login)
+  def createUser(signupData: SignupData): Option[Any] = {
+    DBAccess.getUser(signupData.login) match {
+      case Some(user: User) =>
+        Some(false)
+      case _ =>
+        DBAccess.saveUser(new User(signupData.login, signupData.name, signupData.surname, signupData.email))
+        DBAccess.saveLogin(new Login(signupData.login, signupData.password))
+        login(signupData.login)
+    }
   }
 
   def getGroupedProductFromGroup(login: String, groupID: Int) = {
