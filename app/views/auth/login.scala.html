@@ -11,7 +11,6 @@
         <input type="password" id="password" name="password" class="form-control margin-bottom" placeholder="Password" required="" autocomplete="off">
 
         <div class="alert alert-danger" role="alert" style="display: none;">
-            <strong>Oh snap!</strong> Error in login or password. Try once more.
         </div>
 
         <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
@@ -21,14 +20,21 @@
 } {
     <script type="text/javascript">
             $(document).ready(function () {
+                var errorEl = $("div.alert");
                 $("button.btn").click(function(){
+                    errorEl.slideUp("slow");
                     postJSON("@routes.AuthController.loginJSON", {
                         "login": $("#login").val(),
                         "password": $("#password").val()
                     }, function(json){
                         console.log(json);
                         if ('error' in json) {
-                            $("div.alert").slideDown("slow");
+                            var errorMessage = "<strong>Oh snap!</strong> Error in login or password. Try once more.";
+                            errorEl.slideUp("fast", function() {
+                                errorEl.empty();
+                                errorEl.append(errorMessage);
+                                errorEl.slideDown("slow");
+                            });
                         } else {
                             window.location.replace("@routes.Application.purchases");
                         }

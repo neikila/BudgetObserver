@@ -21,7 +21,6 @@
         <input type="email" id="email" name="email" class="form-control margin-bottom" placeholder="email@@mail.ru" required="" autocomplete="off">
 
         <div class="alert alert-danger" role="alert" style="display: none;">
-            <strong>Oh snap!</strong> Someone are already using this login.
         </div>
 
         <button id="signup_but" class="btn btn-lg btn-primary btn-block margin-bottom" type="submit">Sign up</button>
@@ -30,9 +29,12 @@
     <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/login.css")">
 } {
     <script type="text/javascript">
+            var prevErr = -1;
             $(document).ready(function () {
+                var errorEl = $("div.alert");
                 $(document).xpathEvaluate("//a[contains(text(),'Signup')]/..").addClass("active")
                 $("#signup_but").click(function(){
+                    errorEl.slideUp("slow");
                     postJSON("@routes.AuthController.signup", {
                         "login": $("#login").val(),
                         "password": $("#password").val(),
@@ -43,16 +45,22 @@
                     }, function(json){
                         console.log(json);
                         if ('error' in json) {
-                            var errorEl = $("div.alert");
-                            if (errorEl.css('display') == 'none') {
-                                errorEl.slideDown("slow");
-                            } else {
-                                errorEl.slideUp("fast", function() {
-                                    errorEl.empty();
-                                    errorEl.append("<strong>No, no! </strong>This one is busy too.");
-                                    errorEl.slideDown("slow");
-                                });
+                            var errorMessage = "<strong>Ups!</strong> Something gone wrong.";
+                            if (json.code == 7) {
+                                if (prevErr != 7) {
+                                    errorMessage = "<strong>Oh snap!</strong> Someone is already using this login."
+                                } else {
+                                    errorMessage = "<strong>No, no!</strong> This one is busy too.";
+                                }
+                            } else if (json.code == 8) {
+                                errorMessage = "<strong>Look out!</strong> Passwords don't match.";
                             }
+                            prevErr = json.code;
+                            errorEl.slideUp("fast", function() {
+                                errorEl.empty();
+                                errorEl.append(errorMessage);
+                                errorEl.slideDown("slow");
+                            });
                         } else {
                             window.location.replace("@routes.Application.purchases");
                         }

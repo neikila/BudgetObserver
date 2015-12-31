@@ -40,10 +40,11 @@ class AuthController extends Controller {
             Ok(ErrorMessage.alreadyAuthorised)
           case _ =>
             Logic.createUser(signupData) match {
+              case Some("UserExist") => Ok(ErrorMessage.suchUserExist)
+              case Some("PasswordsDiffer") => Ok(ErrorMessage.passwordsDiffer)
               case Some(session: String) =>
                 Ok(JSONResponse.success)
                   .withSession(request.session + (Utils.session_tag -> session))
-              case Some(false) => Ok(ErrorMessage.suchUserExist)
               case _ => BadRequest(ErrorMessage.errorWhileHandlingRequest)
             }
         }
@@ -110,12 +111,15 @@ object AuthController {
       (JsPath \ Utils.session_tag) .readNullable[String]
     )(LoginData.apply _)
 
-  case class SignupData(login: String, password: String, name: String, surname: String, email: String, override val sessionID: Option[String]) extends IncomeData
+  case class SignupData(login: String, password: String, password_repeat: String,
+                        name: String, surname: String, email: String,
+                        override val sessionID: Option[String]) extends IncomeData
   def getSignUpData = {
     Form(
       mapping(
         "login" -> text,
         "password" -> text,
+        "password_repeat" -> text,
         "name" -> text,
         "surname" -> text,
         "email" -> text,
@@ -127,6 +131,7 @@ object AuthController {
   implicit val signupReads: Reads[SignupData] = (
     (JsPath \ "login") .read[String] and
       (JsPath \ "password").read[String] and
+      (JsPath \ "password_repeat").read[String] and
       (JsPath \ "name").read[String] and
       (JsPath \ "surname").read[String] and
       (JsPath \ "email").read[String] and
