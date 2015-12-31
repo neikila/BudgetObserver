@@ -13,6 +13,7 @@ GET     /logout                     controllers.AuthController.logout
 GET     /signup                     controllers.AuthController.getSignupPage
 
 POST    /login                      controllers.AuthController.login
+POST    /loginJSON                  controllers.AuthController.loginJSON
 POST    /signup                     controllers.AuthController.signup
 POST    /save                       controllers.Application.savePurchase
 POST    /saveJSON                   controllers.Application.savePurchaseJSON

@@ -85,10 +85,9 @@ class AuthController extends Controller {
     Logic.getLoginBySessionID(request.session.get(Utils.session_tag)) match {
       case login: String =>
         Logic.logout(login)
-        Redirect(routes.Application.index)
       case _ =>
-        Unauthorized(views.html.auth.login("Login")).withNewSession
     }
+    Redirect(routes.Application.index).withNewSession
   }
 }
 

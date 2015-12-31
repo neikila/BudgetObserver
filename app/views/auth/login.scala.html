@@ -1,7 +1,7 @@
 @(title: String)
 
 @incl.main("Sign in page", isLogged = false) {
-    <form class="form-signin" action="@routes.AuthController.login" method="post">
+    <form class="form-signin" action="@routes.AuthController.loginJSON" method="post">
         <h2 class="form-signin-heading">Please sign in</h2>
 
         <label for="login" class="sr-only">User login</label>
@@ -9,10 +9,33 @@
 
         <label for="password" class="sr-only">Password</label>
         <input type="password" id="password" name="password" class="form-control margin-bottom" placeholder="Password" required="" autocomplete="off">
+
+        <div class="alert alert-danger" role="alert" style="display: none;">
+            <strong>Oh snap!</strong> Error in login or password. Try once more.
+        </div>
+
         <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
     </form>
 }{
     <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/login.css")">
 } {
-    <script type="text/javascript">$(document).xpathEvaluate("//a[contains(text(),'Login')]/..").addClass("active")</script>
+    <script type="text/javascript">
+            $(document).ready(function () {
+                $("button.btn").click(function(){
+                    postJSON("@routes.AuthController.loginJSON", {
+                        "login": $("#login").val(),
+                        "password": $("#password").val()
+                    }, function(json){
+                        console.log(json);
+                        if ('error' in json) {
+                            $("div.alert").slideDown("slow")
+                        } else {
+                            window.location.replace("/purchases");
+                        }
+                    });
+                    return false;
+                });
+                $(document).xpathEvaluate("//a[contains(text(),'Login')]/..").addClass("active");
+            });
+    </script>
 }
