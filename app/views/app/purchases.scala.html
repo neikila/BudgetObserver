@@ -50,11 +50,13 @@
                         "groupID": 1
                     }, function(json){
                         var num = $(document).xpathEvaluate("//table[contains(@@class, 'table')]/tbody/\*").size() + 1;
-//                        TODO bug
+                        if (num != 1) {
                         $("<tr><th scope='row'>" + num + "</th><td>" + json.product + "</td><td>" + json.amount + "</td></tr>")
                                 .insertBefore($(document).xpathEvaluate("//table[contains(@@class, 'table')]/tbody/\*[1]"));
-                        @*$(document).xpathEvaluate("//table[contains(@@class, 'table')]/tbody")
-                                .append("<tr><th scope='row'>" + num + "</th><td>" + json.product + "</td><td>" + json.amount + "</td></tr>"); *@
+                        } else {
+                            $(document).xpathEvaluate("//table[contains(@@class, 'table')]/tbody")
+                                    .append("<tr><th scope='row'>" + num + "</th><td>" + json.product + "</td><td>" + json.amount + "</td></tr>");
+                        }
                         func(0);
                     });
                     return false;
