@@ -26,10 +26,10 @@ object Logic {
     DBAccess.saveInDB(purchase)
   }
 
-  def getUsersInGroup(groupId: Int): Option[Any] = {
+  def getUsersInGroup(groupId: Int): Option[List[User]] = {
     val list = DBAccess.getUsersInGroup(groupId)
     if (list isEmpty) {
-      Some(None)
+      None
     } else {
       Some(list)
     }

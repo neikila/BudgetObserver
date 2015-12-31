@@ -54,12 +54,12 @@ object DBAccess {
     }
   }
 
-  def getGroup(id: Int): Option[Any] = {
+  def getGroup(id: Int): Option[Group] = {
     DB.withConnection { implicit c =>
       val sql = SQL("select * from groups where id={groupID};").on("groupID" -> id)
       sql().headOption match {
         case Some(row: Row) => Some(Group(row))
-        case _ => Some(None)
+        case _ => None
       }
     }
   }
@@ -86,13 +86,13 @@ object DBAccess {
     }
   }
 
-  def getLoginData(login: String): Option[Any] = {
+  def getLoginData(login: String): Option[Login] = {
     DB.withConnection { implicit c =>
       println("login: " + login)
       val sql = SQL("select * from login where login={login};").on("login" -> login)
       sql().headOption match {
         case Some(row: Row) => Some(Login(row))
-        case _ => Some(None)
+        case _ => None
       }
     }
   }
