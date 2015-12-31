@@ -20,6 +20,10 @@
         <label for="email" class="sr-only">Email</label>
         <input type="email" id="email" name="email" class="form-control margin-bottom" placeholder="email@@gmail.com" required="" autocomplete="off">
 
+        <div class="alert alert-danger" role="alert" style="display: none;">
+            <strong>Oh snap!</strong> Someone are already using this login.
+        </div>
+
         <button id="signup_but" class="btn btn-lg btn-primary btn-block margin-bottom" type="submit">Sign up</button>
     </form>
 } {
@@ -28,7 +32,7 @@
     <script>
             $(document).ready(function () {
                 $("#signup_but").click(function(){
-                    postJSON("/signup", {
+                    postJSON("@routes.AuthController.signup", {
                         "login": $("#login").val(),
                         "password": $("#password").val(),
                         "name": $("#name").val(),
@@ -37,9 +41,18 @@
                     }, function(json){
                         console.log(json);
                         if ('error' in json) {
-                            alert("Not available")
+                            var errorEl = $("div.alert");
+                            if (errorEl.css('display') == 'none') {
+                                errorEl.slideDown("slow");
+                            } else {
+                                errorEl.slideUp("fast", function() {
+                                    errorEl.empty();
+                                    errorEl.append("<strong>No, no! </strong>It is still busy.");
+                                    errorEl.slideDown("slow");
+                                });
+                            }
                         } else {
-                            window.location.replace("/purchases");
+                            window.location.replace("@routes.Application.purchases");
                         }
                     });
                     return false;

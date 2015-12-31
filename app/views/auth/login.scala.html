@@ -28,9 +28,9 @@
                     }, function(json){
                         console.log(json);
                         if ('error' in json) {
-                            $("div.alert").slideDown("slow")
+                            $("div.alert").slideDown("slow");
                         } else {
-                            window.location.replace("/purchases");
+                            window.location.replace("@routes.Application.purchases");
                         }
                     });
                     return false;
