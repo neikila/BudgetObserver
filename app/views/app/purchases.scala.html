@@ -2,28 +2,22 @@
 
 @incl.main("Purchases", isLogged = true) {
     <h1 xmlns="http://www.w3.org/1999/html">Welcome @(customer)!</h1>
-    <form class="form-signin" action="@routes.Application.savePurchase" method="post">
-        <div class="row">
-            <div class="col-xs-4">
-                <div class="dropdown">
-                    <div data-toggle="dropdown">
-                    @*<div class="input-group" data-toggle="dropdown">*@
-                        <input class="entryInput form-control" id="product" name="product" type="text" autocomplete="off" placeholder="Product"/>
-                        @*<span class="input-group-btn">*@
-                            @*<button id="cancelQuery" class="btn btn-default" type="button">X</button>*@
-                        @*</span>*@
-                    </div>
-
-                    <ul class="dropdown-menu" role="menu" aria-labelledby="product"></ul>
+    <form class="form-purchase" action="@routes.Application.savePurchase" method="post">
+        <div>
+            <div class="dropdown">
+                <div data-toggle="dropdown">
+                @*<div class="input-group" data-toggle="dropdown">*@
+                    <input class="entryInput form-control" id="product" name="product" type="text" autocomplete="off" placeholder="Product"/>
+                    @*<span class="input-group-btn">*@
+                        @*<button id="cancelQuery" class="btn btn-default" type="button">X</button>*@
+                    @*</span>*@
                 </div>
+
+                <ul class="dropdown-menu" role="menu" aria-labelledby="product"></ul>
             </div>
+            <input class="entryInput form-control" id="amount" name="amount" type="text" autocomplete="off" placeholder="Amount"/>
+            <input type="submit" value="submit" id="savePur">
         </div>
-        <div class="row">
-            <div class="col-xs-4">
-                <input class="entryInput form-control" id="amount" name="amount" type="text" autocomplete="off" placeholder="Amount"/>
-            </div>
-        </div>
-        <input type="submit" value="submit" id="savePur">
     </form>
     <br>
     <div class="container-fluid">

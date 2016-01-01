@@ -24,3 +24,19 @@ html {
     text-align: center;
     width: 100%;
 }
+
+.form-purchase {
+    min-width: 250px;
+    max-width: 400px;
+    padding: 15px;
+    margin: 0;
+    text-align: left;
+}
+
+.form-purchase > div {
+    width: 100%;
+}
+
+.form-purchase input[type="submit"] {
+    margin-top: 5px;
+}
