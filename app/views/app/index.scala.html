@@ -1,7 +1,9 @@
-@(message: String)
+@()
 
-@incl.main("Welcome to Play", isLogged = false) {
+@incl.main("TODO list", isLogged = false) {
+    <h1>TODO list</h1>
 
-    @play20.welcome(message)
-
+    <ul id="list">
+        <li>Создание групп.</li>
+    </ul>
 } { } { }

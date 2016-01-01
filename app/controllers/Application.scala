@@ -23,11 +23,11 @@ class Application extends Controller {
   }
 
   def index = Action {
-    Redirect(routes.AuthController.getLoginPage)
+    Ok(views.html.app.index())
   }
 
   def documentation= Action {
-    Ok(views.html.app.index("Your new application is ready."))
+    Ok(views.html.app.doc("Your new application is ready."))
   }
 
   def savePurchase = Action { implicit request =>
