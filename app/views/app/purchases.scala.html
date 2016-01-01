@@ -49,6 +49,8 @@
                 <div class="pieholder">
                     <canvas id="graph"></canvas>
                 </div>
+                <h1 id="orientation">test</h1>
+                <h1 id="size">test</h1>
             </div>
         </div>
     </div>
@@ -56,33 +58,20 @@
     <script src="@routes.Assets.versioned("javascripts/Chart.js")" type="text/javascript"></script>
     <script type="text/javascript">
             $(document).ready(function () {
-                var pie = $("canvas");
-                var pieLength = $("div.pieholder").width();
-                if (pieLength > 400) {
-                    pieLength = 400
-                }
-                pie.attr("width", pieLength);
-                pie.attr("height", pieLength);
+                var setPieSize = function() {
+                    var pie = $("canvas");
+                    var pieLength = $("div.pieholder").width();
+                    if (pieLength > 400) {
+                        pieLength = 400
+                    }
+                    pie.attr("width", pieLength);
+                    pie.attr("height", pieLength);
+                    $("#size" ).text("length: " + pieLength);
+                };
+                setPieSize();
+
+                // Установка имени пользователя в navbar
                 $("ul.navbar-right p a").text("@(customer)");
-                console.log("It is ready!!");
-                $("#savePur").click(function(){
-                    postJSON("/saveJSON", {
-                        "product": $("#product").val(),
-                        "amount": Number($("#amount").val()),
-                        "groupID": 1
-                    }, function(json){
-                        var num = $(document).xpathEvaluate("//table[contains(\@@class, 'table')]/tbody/\*").size() + 1;
-                        if (num != 1) {
-                        $("<tr><th scope='row'>" + num + "</th><td>" + json.product + "</td><td>" + json.amount + "</td></tr>")
-                                .insertBefore($(document).xpathEvaluate("//table[contains(\@@class, 'table')]/tbody/\*[1]"));
-                        } else {
-                            $(document).xpathEvaluate("//table[contains(\@@class, 'table')]/tbody")
-                                    .append("<tr><th scope='row'>" + num + "</th><td>" + json.product + "</td><td>" + json.amount + "</td></tr>");
-                        }
-                        func(0);
-                    });
-                    return false;
-                });
 
                 var pieChart = null;
                 var func = function(num) {
@@ -96,9 +85,7 @@
                             var pieData = json;
                             var pieOptions = {
                                 animationSteps: num,
-//                                segmentShowStroke : true,
                                 animationEasing: 'easeInOutQuart'
-//                                animationEasing: 'easeOutBounce'
                             };
                             if (pieChart != null) {
                                 pieChart.destroy();
@@ -114,6 +101,37 @@
                     });
                 };
                 func(100);
+
+                $("#savePur").click(function(){
+                    postJSON("/saveJSON", {
+                        "product": $("#product").val(),
+                        "amount": Number($("#amount").val()),
+                        "groupID": 1
+                    }, function(json){
+                        var num = $(document).xpathEvaluate("//table[contains(\@@class, 'table')]/tbody/\*").size() + 1;
+                        if (num != 1) {
+                            $("<tr><th scope='row'>" + num + "</th><td>" + json.product + "</td><td>" + json.amount + "</td></tr>")
+                                    .insertBefore($(document).xpathEvaluate("//table[contains(\@@class, 'table')]/tbody/\*[1]"));
+                        } else {
+                            $(document).xpathEvaluate("//table[contains(\@@class, 'table')]/tbody")
+                                    .append("<tr><th scope='row'>" + num + "</th><td>" + json.product + "</td><td>" + json.amount + "</td></tr>");
+                        }
+                        func(0);
+                    });
+                    return false;
+                });
+
+                $(window).on("resize", function(event) {
+                    var pie = $("canvas");
+                    var pieLength = $("div.pieholder").width();
+                    if (pieLength > 400) {
+                        pieLength = 400
+                    }
+                    $("div.pieholder").empty().append("<canvas id='graph'></canvas>");
+                    pieChart = null;
+                    setPieSize();
+                    func(0);
+                });
             });
     </script>
 }
