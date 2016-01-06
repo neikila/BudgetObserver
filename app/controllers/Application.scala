@@ -1,6 +1,6 @@
 package controllers
 
-import models.{User, Purchase, Logic, DBAccess}
+import models.{User, Purchase, Logic}
 import play.api._
 import play.api.data._
 import play.api.data.Form

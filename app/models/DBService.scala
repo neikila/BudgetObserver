@@ -7,7 +7,7 @@ import play.api.Play.current
 /**
   * Created by neikila on 25.12.15.
   */
-object DBAccess {
+class DBService {
   def saveInDB(purchase: Purchase) = {
     DB.withConnection { implicit c =>
       SQL("insert into purchase(product, amount, login, groupID) " +

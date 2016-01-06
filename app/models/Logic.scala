@@ -13,21 +13,22 @@ import scala.util.Random
 object Logic {
   var mapSessionToLogin = new HashMap[String, String]
   var mapLoginToSession = new HashMap[String, String]
+  val db = new DBService
 
   def getPurchases(username: String) = {
-    DBAccess.getPurchases(username)
+    db.getPurchases(username)
   }
 
   def getAllPurchases = {
-    DBAccess.getAllPurchases
+    db.getAllPurchases
   }
 
   def savePurchase(purchase: Purchase) = {
-    DBAccess.saveInDB(purchase)
+    db.saveInDB(purchase)
   }
 
   def getUsersInGroup(groupId: Int): Option[List[User]] = {
-    val list = DBAccess.getUsersInGroup(groupId)
+    val list = db.getUsersInGroup(groupId)
     if (list isEmpty) {
       None
     } else {
@@ -36,16 +37,16 @@ object Logic {
   }
 
   def getGroup(groupID: Int) = {
-    DBAccess.getGroup(groupID)
+    db.getGroup(groupID)
   }
 
   def createGroup(groupName: String, author: String) = {
-    DBAccess.createGroup(author, groupName)
-    DBAccess.includeUserInGroup(author, groupName)
+    db.createGroup(author, groupName)
+    db.includeUserInGroup(author, groupName)
   }
 
   def auth(login: String, pass: String): Boolean = {
-    DBAccess.getLoginData(login) match {
+    db.getLoginData(login) match {
       case Some(loginData: Login) => loginData.password == pass
       case _ => false
     }
@@ -64,9 +65,9 @@ object Logic {
   }
 
   def createSessionID(login: String): Option[String] = {
-    DBAccess.getUser(login) match {
+    db getUser(login) match {
       case Some(user: User) =>
-        DBAccess.getLoginData(login) match {
+        db getLoginData(login) match {
           case Some(pass: Login) =>
             val base = user.login + user.name + pass.password
             Some(shuffleString(Base64.getEncoder.encode(shuffleString(base).getBytes).toString))
@@ -115,12 +116,12 @@ object Logic {
 
   def createUser(signupData: SignupData): Option[String] = {
     if (signupData.password == signupData.password_repeat) {
-      DBAccess.getUser(signupData.login) match {
+      db.getUser(signupData.login) match {
         case Some(user: User) =>
           Some("UserExist")
         case _ =>
-          DBAccess.saveUser(new User(signupData.login, signupData.name, signupData.surname, signupData.email))
-          DBAccess.saveLogin(new Login(signupData.login, signupData.password))
+          db.saveUser(new User(signupData.login, signupData.name, signupData.surname, signupData.email))
+          db.saveLogin(new Login(signupData.login, signupData.password))
           login(signupData.login)
       }
     } else {
@@ -129,7 +130,7 @@ object Logic {
   }
 
   def getGroupedProductFromGroup(login: String, groupID: Int) = {
-    DBAccess.getGroupedProductFromGroup(login, groupID)
+    db.getGroupedProductFromGroup(login, groupID)
     //    array.foreach((a: String) => println(a))
     //    DBAccess.getAllPurchases.groupBy(pur => pur.productName)
     //      .foreach((para: (String, List[Purchase])) => {
