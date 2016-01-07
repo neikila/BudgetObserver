@@ -31,7 +31,7 @@
                         if ('error' in json) {
                             var errorMessage = "<strong>Oh snap!</strong> Error in login or password. Try once more.";
                             if (json.code == 2) {
-                                errorMessage = "<strong>Oh snap!</strong> Someone has already logged into this account";
+                                window.location.replace("@routes.Application.purchases");
                             }
                             errorEl.slideUp("fast", function() {
                                 errorEl.empty();

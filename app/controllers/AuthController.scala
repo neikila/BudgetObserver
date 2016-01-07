@@ -53,33 +53,21 @@ class AuthController extends Controller {
     )
   }
 
-  def login = Action { implicit request =>
-    val loginData = AuthController.getLoginData.bindFromRequest.get
-    if (logic.auth(loginData.login, loginData.pass))
-      logic.login(loginData.login) match {
-        case Some(session: String) =>
-          Redirect(routes.Application.purchases)
-            .withSession(request.session + (Utils.session_tag -> session))
-        case _ =>
-          Ok(views.html.incl.error("Login", "You are already authorised"))
-      }
-    else
-      Ok(views.html.incl.error("Login", "Wrong pass or login"))
-  }
-
   def loginJSON = Action(BodyParsers.parse.json) { request =>
     request.body.validate[AuthController.LoginData].fold(
       error => Ok(ErrorMessage.wrongFormat),
       loginData =>
-        if (logic.auth(loginData.login, loginData.pass))
-          logic.login(loginData.login) match {
-            case Some(session: String) =>
-              Ok(JSONResponse.success)
-                .withSession(request.session + (Utils.session_tag -> session))
-            case _ => Ok(ErrorMessage.alreadyAuthorised)
-          }
-        else
-          Ok(ErrorMessage.wrongAuth)
+        logic.getLoginBySessionID(request.session.get(Utils.session_tag)) match {
+          case login: String =>
+            Ok(ErrorMessage.alreadyAuthorised)
+          case _ =>
+            logic.auth(loginData.login, loginData.pass) match {
+              case Some(session: String) =>
+                Ok(JSONResponse.success)
+                  .withSession(request.session + (Utils.session_tag -> session))
+              case _ => Ok(ErrorMessage.wrongAuth)
+            }
+        }
     )
   }
 

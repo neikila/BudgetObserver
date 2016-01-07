@@ -45,46 +45,45 @@ class Logic {
     db.includeUserInGroup(author, groupName)
   }
 
-  def auth(login: String, pass: String): Boolean = {
+  def auth(login: String, pass: String): Option[String] = {
     db.getLoginData(login) match {
-      case Some(loginData: Login) => loginData.password == pass
-      case _ => false
-    }
-  }
-
-  def login(login: String): Option[String] = {
-    createSessionID(login) match {
-      case Some(session: String) =>
-        if (addSession(session, login))
-          Some(session)
-        else
+      case Some(loginData: Login) =>
+        if (loginData.password == pass) {
+          Some(this.login(loginData))
+        } else {
           None
+        }
+      case _ => None
+    }
+  }
+
+  def login(loginData: Login): String = {
+    mapLoginToSession.get(loginData.login) match {
+      case Some(session) =>
+        var newSession = createSessionID(loginData)
+        while (newSession == session) {
+          newSession = createSessionID(loginData)
+        }
+        newSession
       case _ =>
-        None
+        val session = createSessionID(loginData)
+        addSession(session, loginData.login)
+        session
     }
   }
 
-  def createSessionID(login: String): Option[String] = db getLoginData login match {
-    case Some(loginData: Login) =>
-      val base = shuffleString(loginData.login).substring(0, Logic.minLoginSize) +
-        shuffleString(loginData.password).substring(0, Logic.minPassSize)
-      Some(Base64.getEncoder.encode((
-        loginData.login + shuffleString(Base64.getEncoder.encode(shuffleString(base).getBytes).toString))
-        .getBytes)
-        .toString)
-    case _ =>
-      None
+  def createSessionID(loginData: Login): String = {
+    val base = shuffleString(loginData.login).substring(0, Logic.minLoginSize) +
+      shuffleString(loginData.password).substring(0, Logic.minPassSize)
+    Base64.getEncoder.encode((
+      loginData.login + shuffleString(Base64.getEncoder.encode(shuffleString(base).getBytes).toString))
+      .getBytes)
+      .toString
   }
 
-  def addSession(session: String, login: String) = {
-    if (mapSessionToLogin.contains(session) || mapLoginToSession.contains(login))
-      false
-    else {
-      mapSessionToLogin += (session -> login)
-      mapLoginToSession += (login -> session)
-      println("Map size: " + mapSessionToLogin.size)
-      true
-    }
+  def addSession(session: String, login: String): Unit = {
+    mapSessionToLogin += (session -> login)
+    mapLoginToSession += (login -> session)
   }
 
   def logout(login: String) = {
@@ -118,8 +117,9 @@ class Logic {
           Some("UserExist")
         case _ =>
           db.saveUser(new User(signupData.login, signupData.name, signupData.surname, signupData.email))
-          db.saveLogin(new Login(signupData.login, signupData.password))
-          login(signupData.login)
+          val loginData = new Login(signupData.login, signupData.password)
+          db.saveLogin(loginData)
+          Some(login(loginData))
       }
     } else {
       Some("PasswordsDiffer")

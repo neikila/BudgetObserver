@@ -19,7 +19,7 @@ class LogicSpec extends PlaySpec with MockitoSugar {
       }
 
       val authResult = logic.auth(loginData.login, loginData.password)
-      authResult mustBe true
+      authResult mustBe defined
     }
 
     "return false if login is wrong" in {
@@ -34,7 +34,7 @@ class LogicSpec extends PlaySpec with MockitoSugar {
       }
 
       val authResult = logic.auth(wrongLogin, loginData.password)
-      authResult mustBe false
+      authResult mustBe None
     }
 
     "return false if password is wrong" in {
@@ -46,10 +46,28 @@ class LogicSpec extends PlaySpec with MockitoSugar {
 
       val logic = new Logic() {
         override val db = mockDB
+
       }
 
       val authResult = logic.auth(loginData.login, wrongPassword)
-      authResult mustBe false
+      authResult mustBe None
+    }
+
+    "return different session for double login" in {
+      val loginData = new Login("testLogin", "testPassword")
+
+      val mockDB = mock[DBService]
+      when(mockDB.getLoginData(loginData.login)) thenReturn Some(loginData)
+
+      val logic = new Logic() {
+        override val db = mockDB
+      }
+
+      val authFirstResult = logic.auth(loginData.login, loginData.password)
+      val authSecondResult = logic.auth(loginData.login, loginData.password)
+
+      authSecondResult mustBe defined
+      authFirstResult must not be authSecondResult
     }
   }
 }
