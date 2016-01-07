@@ -1,11 +1,18 @@
-import models.{Login, DBService, Logic}
+import controllers.AuthController.SignupData
+import controllers.IncomeData
+import models.{User, Login, DBService, Logic}
+import org.junit.runner.RunWith
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
+import org.mockito.Matchers._
 
 import org.mockito.Mockito._
+import org.specs2.runner.JUnitRunner
+
 /**
   * Created by neikila on 07.01.16.
   */
+@RunWith(classOf[JUnitRunner])
 class LogicSpec extends PlaySpec with MockitoSugar {
 
   "Logic#auth" should {
@@ -69,5 +76,67 @@ class LogicSpec extends PlaySpec with MockitoSugar {
       authSecondResult mustBe defined
       authFirstResult must not be authSecondResult
     }
+  }
+
+  "return SessionID if no problem while creating user" in {
+    val pass = "testPass"
+    val signupData = new SignupData  ("testLogin", pass, pass,
+      "testName", "testSurname", "testEmail@test.test", None)
+
+    val mockDB = mock[DBService]
+    when(mockDB.getUser(signupData.login)) thenReturn None
+    when(mockDB.saveUser(any[User])) thenReturn 0
+    when(mockDB.saveLogin(any[Login])) thenReturn 0
+
+    val logic = new Logic() {
+      override val db = mockDB
+    }
+
+    val signupResult = logic.createUser(signupData)
+
+    signupResult mustBe defined
+    signupResult must not be Some("PasswordsDiffer")
+    signupResult must not be Some("UserExist")
+  }
+
+  "return PasswordsDiffer if password not equal repeat_password" in {
+    val pass = "testPass"
+    val differentPass = "differentPass"
+    val signupData = new SignupData  ("testLogin", pass, differentPass,
+      "testName", "testSurname", "testEmail@test.test", None)
+
+    val mockDB = mock[DBService]
+    when(mockDB.getUser(signupData.login)) thenReturn None
+    when(mockDB.saveUser(any[User])) thenReturn 0
+    when(mockDB.saveLogin(any[Login])) thenReturn 0
+
+    val logic = new Logic() {
+      override val db = mockDB
+    }
+
+    val signupResult = logic.createUser(signupData)
+
+    signupResult mustBe Some("PasswordsDiffer")
+  }
+
+  "return UserExist if user with such login already exist" in {
+    val pass = "testPass"
+    val signupData = new SignupData  ("testLogin", pass, pass,
+      "testName", "testSurname", "testEmail@test.test", None)
+
+    val mockDB = mock[DBService]
+    when(mockDB.getUser(signupData.login)) thenReturn Some(
+      new User(signupData.login, signupData.name, signupData.surname, signupData.email)
+    )
+    when(mockDB.saveUser(any[User])) thenReturn 0
+    when(mockDB.saveLogin(any[Login])) thenReturn 0
+
+    val logic = new Logic() {
+      override val db = mockDB
+    }
+
+    val signupResult = logic.createUser(signupData)
+
+    signupResult mustBe Some("UserExist")
   }
 }
