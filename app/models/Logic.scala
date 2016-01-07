@@ -10,7 +10,7 @@ import scala.util.Random
 /**
   * Created by neikila on 25.12.15.
   */
-object Logic {
+class Logic {
   var mapSessionToLogin = new HashMap[String, String]
   var mapLoginToSession = new HashMap[String, String]
   val db = new DBService
@@ -125,7 +125,7 @@ object Logic {
           login(signupData.login)
       }
     } else {
-        Some("PasswordsDiffer")
+      Some("PasswordsDiffer")
     }
   }
 
@@ -137,5 +137,13 @@ object Logic {
     //        val (product, list) = para
     //        list.sum()
     //      })
+  }
+}
+
+object Logic {
+  val logic = new Logic
+
+  def apply() = {
+    logic
   }
 }

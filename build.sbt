@@ -12,7 +12,9 @@ libraryDependencies ++= Seq(
   ws,
   specs2 % Test,
   "com.typesafe.play" %% "anorm" % "2.3.6",
-  "mysql" % "mysql-connector-java" % "5.1.25"
+  "mysql" % "mysql-connector-java" % "5.1.25",
+  "org.scalatest" %% "scalatest" % "2.2.1" % "test",
+  "org.scalatestplus" %% "play" % "1.2.0" % "test"
 )
 
 resolvers ++= Seq(

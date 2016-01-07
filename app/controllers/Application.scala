@@ -11,11 +11,12 @@ import play.api.libs.json._
 import play.api.libs.functional.syntax._
 
 class Application extends Controller {
+  val logic = Logic()
 
   def purchases = Action { request =>
-    Logic.getLoginBySessionID(Utils.getSessionID(request)) match {
+    logic.getLoginBySessionID(Utils.getSessionID(request)) match {
       case login: String =>
-        val list = Logic.getPurchases(login)
+        val list = logic.getPurchases(login)
         Ok(views.html.app.purchases(login, list))
       case _ =>
         Redirect(routes.AuthController.getLoginPage).withNewSession
@@ -31,10 +32,10 @@ class Application extends Controller {
   }
 
   def savePurchase = Action { implicit request =>
-    Logic.getLoginBySessionID(Utils.getSessionID(request)) match {
+    logic.getLoginBySessionID(Utils.getSessionID(request)) match {
       case login: String =>
         val userData = Application.getPurchaseForm.bindFromRequest.get
-        Logic.savePurchase(new Purchase(userData.product, userData.amount, login, userData.groupID))
+        logic.savePurchase(new Purchase(userData.product, userData.amount, login, userData.groupID))
         Redirect(routes.Application.purchases)
       case _ =>
         Unauthorized(views.html.auth.login("Login")).withNewSession
@@ -45,10 +46,10 @@ class Application extends Controller {
     request.body.validate[Application.PurchaseData].fold(
       error => BadRequest(ErrorMessage.notAuthorised),
       purchaseData => {
-        Logic.getLoginBySessionID(Utils.getSessionID(request, purchaseData)) match {
+        logic.getLoginBySessionID(Utils.getSessionID(request, purchaseData)) match {
           case login: String =>
             val purchase = new Purchase(purchaseData.product, purchaseData.amount, login, purchaseData.groupID)
-            Logic.savePurchase(purchase)
+            logic.savePurchase(purchase)
             Ok(purchase.toJson)
           case _ =>
             Ok(ErrorMessage.notAuthorised).withNewSession
@@ -58,7 +59,7 @@ class Application extends Controller {
   }
 
   def groupInfo(id: Int) = Action {
-    Logic.getUsersInGroup(id) match {
+    logic.getUsersInGroup(id) match {
       case Some(list: List[User]) => Ok(views.html.app.group("Group info", id, list))
       case _ =>
           Ok(views.html.incl.error("Group info", {
@@ -78,10 +79,10 @@ class Application extends Controller {
   )
 
   def getGroupPieData(groupID: Int) = Action { request =>
-    Logic.getLoginBySessionID(Utils.getSessionID(request)) match {
+    logic.getLoginBySessionID(Utils.getSessionID(request)) match {
       case login: String =>
         var last = -1
-        Ok(Json.toJson(Logic.getGroupedProductFromGroup(login, 1).map(pur => {
+        Ok(Json.toJson(logic.getGroupedProductFromGroup(login, 1).map(pur => {
           last = (last + 1) % array.length
           Json.obj(
             "value" -> pur.amount,
@@ -99,9 +100,9 @@ class Application extends Controller {
     request.body.validate[Application.GroupData].fold(
       error => BadRequest(ErrorMessage.wrongFormat),
       groupData => {
-        Logic.getLoginBySessionID(Utils.getSessionID(request, groupData)) match {
+        logic.getLoginBySessionID(Utils.getSessionID(request, groupData)) match {
           case login: String =>
-            Logic.createGroup(groupData.groupName, login)
+            logic.createGroup(groupData.groupName, login)
             Ok(Json.obj(
               "groupName" -> groupData.groupName,
               "author" -> login
