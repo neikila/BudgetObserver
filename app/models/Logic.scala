@@ -64,19 +64,16 @@ class Logic {
     }
   }
 
-  def createSessionID(login: String): Option[String] = {
-    db getUser(login) match {
-      case Some(user: User) =>
-        db getLoginData(login) match {
-          case Some(pass: Login) =>
-            val base = user.login + user.name + pass.password
-            Some(shuffleString(Base64.getEncoder.encode(shuffleString(base).getBytes).toString))
-          case _ =>
-            None
-        }
-      case _ =>
-        None
-    }
+  def createSessionID(login: String): Option[String] = db getLoginData login match {
+    case Some(loginData: Login) =>
+      val base = shuffleString(loginData.login).substring(0, Logic.minLoginSize) +
+        shuffleString(loginData.password).substring(0, Logic.minPassSize)
+      Some(Base64.getEncoder.encode((
+        loginData.login + shuffleString(Base64.getEncoder.encode(shuffleString(base).getBytes).toString))
+        .getBytes)
+        .toString)
+    case _ =>
+      None
   }
 
   def addSession(session: String, login: String) = {
@@ -142,6 +139,8 @@ class Logic {
 
 object Logic {
   val logic = new Logic
+  val minLoginSize = 4
+  val minPassSize = 4
 
   def apply() = {
     logic
