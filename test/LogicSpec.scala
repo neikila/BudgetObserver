@@ -9,7 +9,7 @@ import org.mockito.Mockito._
 class LogicSpec extends PlaySpec with MockitoSugar {
 
   "Logic#auth" should {
-    "return true login and password are correct" in {
+    "return true if login and password are correct" in {
       val loginData = new Login("testLogin", "testPassword")
       val mockDB = mock[DBService]
       when(mockDB.getLoginData(loginData.login)) thenReturn Some(loginData)
@@ -20,6 +20,36 @@ class LogicSpec extends PlaySpec with MockitoSugar {
 
       val authResult = logic.auth(loginData.login, loginData.password)
       authResult mustBe true
+    }
+
+    "return false if login is wrong" in {
+      val loginData = new Login("testLogin", "testPassword")
+      val wrongLogin = "wrongLogin"
+
+      val mockDB = mock[DBService]
+      when(mockDB.getLoginData(loginData.login)) thenReturn Some(loginData)
+
+      val logic = new Logic() {
+        override val db = mockDB
+      }
+
+      val authResult = logic.auth(wrongLogin, loginData.password)
+      authResult mustBe false
+    }
+
+    "return false if password is wrong" in {
+      val loginData = new Login("testLogin", "testPassword")
+      val wrongPassword = "wrongPassword"
+
+      val mockDB = mock[DBService]
+      when(mockDB.getLoginData(loginData.login)) thenReturn Some(loginData)
+
+      val logic = new Logic() {
+        override val db = mockDB
+      }
+
+      val authResult = logic.auth(loginData.login, wrongPassword)
+      authResult mustBe false
     }
   }
 }
