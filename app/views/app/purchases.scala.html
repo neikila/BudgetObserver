@@ -56,6 +56,10 @@
     <script src="@routes.Assets.versioned("javascripts/Chart.js")" type="text/javascript"></script>
     <script type="text/javascript">
             $(document).ready(function () {
+                $('#product').focusout(function(){
+                    $("div.dropdown-backdrop").click();
+                });
+
                 var setPieSize = function() {
                     var pie = $("canvas");
                     var pieLength = $("div.pieholder").width();
