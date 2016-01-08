@@ -19,6 +19,15 @@ class Logic {
     db.getPurchases(username)
   }
 
+  def getDefaultGroupName(login: String) = {
+    db.getDefaultUsersGroup(login) match {
+      case Some(groupName: String) => groupName
+      case _ =>
+        println("It will never happen. Method: Logic.getDefaultGroupName")
+        "Error"
+    }
+  }
+
   def getAllPurchases = {
     db.getAllPurchases
   }

@@ -64,6 +64,16 @@ class DBService {
     }
   }
 
+  def getDefaultUsersGroup(login: String): Option[String] = {
+    DB.withConnection { implicit c =>
+      val sql = SQL("select groupName from usersToGroup where isDefault='true' and login={login} limit 1;").on("login" -> login)
+      sql().headOption match {
+        case Some(row: Row) => Some(row[String]("groupName"))
+        case _ => None
+      }
+    }
+  }
+
   def createGroup(author: String, description: String): Option[Long] = {
     DB.withConnection { implicit c =>
       SQL("insert into groups (description, author) values({description}, {author});")

@@ -17,7 +17,8 @@ class Application extends Controller {
     logic.getLoginBySessionID(Utils.getSessionID(request)) match {
       case login: String =>
         val list = logic.getPurchases(login)
-        Ok(views.html.app.purchases(login, list))
+        val groupName = logic.getDefaultGroupName(login)
+        Ok(views.html.app.purchases(login, list, groupName))
       case _ =>
         Redirect(routes.AuthController.getLoginPage).withNewSession
     }

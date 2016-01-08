@@ -1,4 +1,4 @@
-@(customer: String, purchases: List[Purchase])
+@(customer: String, purchases: List[Purchase], groupName: String)
 
 @incl.main("Purchases", isLogged = true) {
     <h1 xmlns="http://www.w3.org/1999/html">Welcome @(customer)!</h1>
@@ -24,7 +24,7 @@
         <div class="row">
             <div class="col-md-5">
                 <div class="panel panel-default">
-                    <div class="panel-heading">Purchases</div>
+                    <div class="panel-heading">@groupName</div>
                     <table class="table">
                         <thead>
                             <tr>
