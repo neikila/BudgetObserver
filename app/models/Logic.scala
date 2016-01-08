@@ -41,8 +41,12 @@ class Logic {
   }
 
   def createGroup(groupName: String, author: String) = {
-    db.createGroup(author, groupName)
-    db.includeUserInGroup(author, groupName)
+    db.createGroup(author) match {
+      case Some(id: Long) =>
+        db.includeUserInGroup(id, author, groupName)
+      case _ =>
+        println("This will never happen. I Hope...")
+    }
   }
 
   def auth(login: String, pass: String): Option[String] = {
@@ -117,6 +121,7 @@ class Logic {
           Some("UserExist")
         case _ =>
           db.saveUser(new User(signupData.login, signupData.name, signupData.surname, signupData.email))
+          createGroup(Logic.defaultGroupName, signupData.login)
           val loginData = new Login(signupData.login, signupData.password)
           db.saveLogin(loginData)
           Some(login(loginData))
@@ -141,6 +146,7 @@ object Logic {
   val logic = new Logic
   val minLoginSize = 4
   val minPassSize = 4
+  val defaultGroupName = "First budget"
 
   def apply() = {
     logic

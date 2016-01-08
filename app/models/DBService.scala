@@ -64,24 +64,48 @@ class DBService {
     }
   }
 
-  def createGroup(author: String, groupName: String) = {
+  def createGroup(author: String, description: String): Option[Long] = {
     DB.withConnection { implicit c =>
-      SQL("insert into groups (groupname, author) values({groupName}, {author});")
+      SQL("insert into groups (description, author) values({description}, {author});")
         .on(
-          "groupName" -> groupName,
+          "description" -> description,
           "author" -> author
-        ).executeUpdate
+        ).executeInsert()
     }
   }
 
-  def includeUserInGroup(login: String, groupName: String) = {
+  def createGroup(author: String): Option[Long] = {
+    DB.withConnection { implicit c =>
+      SQL("insert into groups (author) values({author});")
+        .on(
+          "author" -> author
+        ).executeInsert()
+    }
+  }
+
+  def getGroupIdBy(login: String, groupName: String): Option[Int] = {
+    DB.withConnection { implicit c =>
+      val sql = SQL("select groupID from groups where login = {author} and groupName = {groupName};")
+        .on(
+          "groupName" -> groupName,
+          "author" -> login
+        )
+      sql().headOption match {
+        case Some(row: Row) => Some(row[Int]("id"))
+        case _ => None
+      }
+    }
+  }
+
+  def includeUserInGroup(groupID: Long, login: String, groupName: String) = {
     DB.withConnection { implicit c =>
       SQL(
-        "insert into usersToGroup(groupID, login) " +
-          "values((select id from groups where groupname={groupName} and author={author}),{author});"
+        "insert into usersToGroup(groupID, login, groupName) " +
+          "values({groupID}, {login}, {groupName});"
       ).on(
+        "groupID" -> groupID,
         "groupName" -> groupName,
-        "author" -> login
+        "login" -> login
       ).executeUpdate()
     }
   }
