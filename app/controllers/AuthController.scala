@@ -55,7 +55,13 @@ class AuthController extends Controller {
 
   def loginJSON = Action(BodyParsers.parse.json) { request =>
     request.body.validate[AuthController.LoginData].fold(
-      error => Ok(ErrorMessage.wrongFormat),
+      errors => {
+        var extraMessage = ""
+        for (error <- errors) {
+          extraMessage += (" " + error._1)
+        }
+        Ok(ErrorMessage.wrongFormat(extraMessage))
+      },
       loginData =>
         logic.getLoginBySessionID(request.session.get(Utils.session_tag)) match {
           case login: String =>
@@ -95,7 +101,7 @@ object AuthController {
   }
 
   implicit val loginReads: Reads[LoginData] = (
-    (JsPath \ "login") .read[String] and
+    (JsPath \ "login") .read[String].filter((login: String) => login.length > 3) and
       (JsPath \ "password").read[String] and
       (JsPath \ Utils.session_tag) .readNullable[String]
     )(LoginData.apply _)

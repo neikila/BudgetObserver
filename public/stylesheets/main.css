@@ -25,18 +25,25 @@ html {
     width: 100%;
 }
 
-.form-purchase {
-    min-width: 250px;
-    max-width: 400px;
-    padding: 15px;
-    margin: 0;
-    text-align: left;
-}
-
 .form-purchase > div {
     width: 100%;
 }
 
+.form-create-group button[type="submit"],
 .form-purchase input[type="submit"] {
     margin-top: 5px;
+}
+
+.form-purchase,
+.form-signin,
+.form-create-group {
+    max-width: 400px;
+    padding: 15px;
+    margin: 0 auto;
+}
+
+.form-purchase {
+    min-width: 250px;
+    margin: 0;
+    text-align: left;
 }

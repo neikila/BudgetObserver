@@ -50,6 +50,14 @@ object ErrorMessage {
     )
   }
 
+  def wrongFormat(extraMessage: String) = {
+    Json.obj(
+      "error" -> "Wrong request format",
+      "extraMessage" -> extraMessage,
+      "code" -> wrongFormatCode
+    )
+  }
+
   val wrongAuth = {
     Json.obj(
       "error" -> "Wrong pass or login",

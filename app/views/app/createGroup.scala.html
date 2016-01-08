@@ -1,0 +1,52 @@
+@()
+
+@incl.main("Registration page", isLogged = false) {
+    <form class="form-create-group">
+        <h2 class="heading">Creating new budget!</h2>
+
+        <label for="groupName" class="sr-only">Group name</label>
+        <input type="text" id="groupName" name="groupName" class="form-control" placeholder="Budget name" required="" autofocus="" autocomplete="off">
+
+        <label for="description" class="sr-only">Description</label>
+        <textarea id="description" name="description" placeholder="Description"  class="form-control" rows="3"></textarea>
+
+        <div class="alert alert-danger" role="alert" style="display: none;">
+        </div>
+
+        <button id="signup_but" class="btn btn-lg btn-primary btn-block margin-bottom" type="submit">Sign up</button>
+    </form>
+} {
+    <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/login.css")">
+} {
+    <script type="text/javascript">
+            $(document).ready(function () {
+                var errorEl = $("div.alert");
+//                $(document).xpathEvaluate("//a[contains(text(),'Signup')]/..").addClass("active")
+
+                $("#signup_but").click(function(){
+                    errorEl.slideUp("slow");
+                    postJSON("@routes.Application.createGroup", {
+                        "groupName": $("#groupName").val()
+                        "description": $("#description").val()
+                    }, function(json){
+                        console.log(json);
+                        if ('error' in json) {
+                            var errorMessage = "<strong>Ups!</strong> You have already have group with such name.";
+                            if (json.code == 7) {
+                                errorMessage = "<strong>Oh snap!</strong> Someone is already using this login."
+                            }
+                            errorEl.slideUp("fast", function() {
+                                errorEl.empty();
+                                errorEl.append(errorMessage);
+                                errorEl.slideDown("slow");
+                            });
+                        } else {
+                            // TODO replace to created group
+                            window.location.replace("@routes.Application.purchases");
+                        }
+                    });
+                    return false;
+                });
+            });
+    </script>
+}
