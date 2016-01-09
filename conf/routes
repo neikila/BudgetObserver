@@ -4,9 +4,10 @@
 
 # Home page
 GET     /                           controllers.Application.index
-GET     /purchases                  controllers.Application.purchases
+GET     /purchases                  controllers.Application.purchases(groupNameRequest = "")
+GET     /:groupName/purchases       controllers.Application.purchases(groupName)
 GET     /groupinfo                  controllers.Application.groupInfo(id: Int ?= 0)
-GET     /getGroupPieData            controllers.Application.getGroupPieData(groupID: Int)
+GET     /getGroupPieData            controllers.Application.getGroupPieData(groupName: String)
 GET     /documentation              controllers.Application.documentation
 GET     /login                      controllers.AuthController.getLoginPage
 GET     /logout                     controllers.AuthController.logout
@@ -15,7 +16,6 @@ GET     /createGroup                controllers.Application.getCreateGroup
 
 POST    /loginJSON                  controllers.AuthController.loginJSON
 POST    /signup                     controllers.AuthController.signup
-POST    /save                       controllers.Application.savePurchase
 POST    /saveJSON                   controllers.Application.savePurchaseJSON
 POST    /createGroup                controllers.Application.createGroup
 # Map static resources from the /public folder to the /assets URL path

@@ -26,7 +26,7 @@
                 $("#signup_but").click(function(){
                     errorEl.slideUp("slow");
                     postJSON("@routes.Application.createGroup", {
-                        "groupName": $("#groupName").val()
+                        "groupName": $("#groupName").val(),
                         "description": $("#description").val()
                     }, function(json){
                         console.log(json);
@@ -42,7 +42,7 @@
                             });
                         } else {
                             // TODO replace to created group
-                            window.location.replace("@routes.Application.purchases");
+                            window.location.replace("/purchases");
                         }
                     });
                     return false;

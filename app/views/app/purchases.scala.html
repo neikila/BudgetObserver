@@ -2,7 +2,7 @@
 
 @incl.main("Purchases", isLogged = true) {
     <h1 xmlns="http://www.w3.org/1999/html">Welcome @(customer)!</h1>
-    <form class="form-purchase" action="@routes.Application.savePurchase" method="post">
+    <form class="form-purchase">
         <div>
             <div class="dropdown">
                 <div data-toggle="dropdown">
@@ -55,6 +55,7 @@
 }{ } {
     <script src="@routes.Assets.versioned("javascripts/Chart.js")" type="text/javascript"></script>
     <script type="text/javascript">
+        var groupName = '@groupName';
             $(document).ready(function () {
                 $('#product').focusout(function(){
                     $("div.dropdown-backdrop").click();
@@ -79,7 +80,9 @@
                     $.ajax({
                         type: "GET",
                         url: "/getGroupPieData",
-                        data: {"groupID": 1},
+                        data: {
+                            "groupName": groupName
+                        },
                         success: function(json){
                             console.log(json);
                             var graph = document.getElementById('graph').getContext('2d');
@@ -107,7 +110,7 @@
                     postJSON("/saveJSON", {
                         "product": $("#product").val(),
                         "amount": Number($("#amount").val()),
-                        "groupID": 1
+                        "groupName": groupName
                     }, function(json){
                         var num = $(document).xpathEvaluate("//table[contains(\@@class, 'table')]/tbody/\*").size() + 1;
                         if (num != 1) {

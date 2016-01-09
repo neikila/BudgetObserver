@@ -19,7 +19,7 @@ class AuthController extends Controller {
   def getLoginPage = Action { request =>
     logic.getLoginBySessionID(Utils.getSessionID(request)) match {
       case login: String =>
-        Redirect(routes.Application.purchases)
+        Redirect(routes.Application.purchases(""))
       case _ =>
         Ok(views.html.auth.login("Login")).withNewSession
     }

@@ -35,6 +35,13 @@ class DBService {
     }
   }
 
+  def getPurchasesFromGroup(groupID: Int) = {
+    DB.withConnection { implicit c =>
+      val sql = SQL("select * from purchase where groupID={groupID};").on("groupID" -> groupID)
+      sql().map(row => Purchase(row)).toList
+    }
+  }
+
   def getUsersInGroup(groupID: Int) = {
     DB.withConnection { implicit c =>
       val sql = SQL("select users.* from users join usersToGroup as UTG " +
@@ -95,13 +102,13 @@ class DBService {
 
   def getGroupIdBy(login: String, groupName: String): Option[Int] = {
     DB.withConnection { implicit c =>
-      val sql = SQL("select groupID from groups where login = {author} and groupName = {groupName};")
+      val sql = SQL("select groupID from usersToGroup where login = {author} and groupName = {groupName};")
         .on(
           "groupName" -> groupName,
           "author" -> login
         )
       sql().headOption match {
-        case Some(row: Row) => Some(row[Int]("id"))
+        case Some(row: Row) => Some(row[Int]("groupID"))
         case _ => None
       }
     }

@@ -13,11 +13,13 @@ import play.api.libs.functional.syntax._
 class Application extends Controller {
   val logic = Logic()
 
-  def purchases = Action { request =>
+  def purchases(groupNameRequest: String = "") = Action { request =>
     logic.getLoginBySessionID(Utils.getSessionID(request)) match {
       case login: String =>
-        val list = logic.getPurchases(login)
-        val groupName = logic.getDefaultGroupName(login)
+        val groupName =
+          if (groupNameRequest.length() > 0) groupNameRequest
+          else logic.getDefaultGroupName(login)
+        val list = logic.getGroupPurchases(login, Some(groupName))
         Ok(views.html.app.purchases(login, list, groupName))
       case _ =>
         Redirect(routes.AuthController.getLoginPage).withNewSession
@@ -32,26 +34,13 @@ class Application extends Controller {
     Ok(views.html.app.doc("Your new application is ready."))
   }
 
-  def savePurchase = Action { implicit request =>
-    logic.getLoginBySessionID(Utils.getSessionID(request)) match {
-      case login: String =>
-        val userData = Application.getPurchaseForm.bindFromRequest.get
-        logic.savePurchase(new Purchase(userData.product, userData.amount, login, userData.groupID))
-        Redirect(routes.Application.purchases)
-      case _ =>
-        Unauthorized(views.html.auth.login("Login")).withNewSession
-    }
-  }
-
   def savePurchaseJSON = Action(BodyParsers.parse.json) { implicit request =>
     request.body.validate[Application.PurchaseData].fold(
       error => BadRequest(ErrorMessage.notAuthorised),
       purchaseData => {
         logic.getLoginBySessionID(Utils.getSessionID(request, purchaseData)) match {
           case login: String =>
-            val purchase = new Purchase(purchaseData.product, purchaseData.amount, login, purchaseData.groupID)
-            logic.savePurchase(purchase)
-            Ok(purchase.toJson)
+            Ok(logic.savePurchase(login, purchaseData).toJson)
           case _ =>
             Ok(ErrorMessage.notAuthorised).withNewSession
         }
@@ -79,11 +68,11 @@ class Application extends Controller {
     "#D24AC5"
   )
 
-  def getGroupPieData(groupID: Int) = Action { request =>
+  def getGroupPieData(groupName: String) = Action { request =>
     logic.getLoginBySessionID(Utils.getSessionID(request)) match {
       case login: String =>
         var last = -1
-        Ok(Json.toJson(logic.getGroupedProductFromGroup(login, 1).map(pur => {
+        Ok(Json.toJson(logic.getGroupedProductFromGroup(login, groupName).map(pur => {
           last = (last + 1) % array.length
           Json.obj(
             "value" -> pur.amount,
@@ -127,23 +116,12 @@ class Application extends Controller {
 
 object Application {
 
-  case class PurchaseData(product: String, amount: Int, groupID: Int, override val sessionID: Option[String] = None) extends IncomeData
-
-  def getPurchaseForm = {
-    Form(
-      mapping(
-        "product" -> text,
-        "amount" -> number,
-        "groupID" -> number,
-        Utils.session_tag -> optional(text)
-      )(PurchaseData.apply)(PurchaseData.unapply)
-    )
-  }
+  case class PurchaseData(product: String, amount: Int, groupName: String, override val sessionID: Option[String] = None) extends IncomeData
 
   implicit val purchaseReads: Reads[PurchaseData] = (
     (JsPath \ "product") .read[String] and
       (JsPath \ "amount").read[Int] and
-      (JsPath \ "groupID").read[Int] and
+      (JsPath \ "groupName").read[String] and
       (JsPath \ Utils.session_tag).readNullable[String]
     )(PurchaseData.apply _)
 

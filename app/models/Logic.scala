@@ -2,6 +2,7 @@ package models
 
 import java.util.Base64
 
+import controllers.Application.PurchaseData
 import controllers.AuthController.SignupData
 
 import scala.collection.immutable.HashMap
@@ -19,7 +20,21 @@ class Logic {
     db.getPurchases(username)
   }
 
-  def getDefaultGroupName(login: String) = {
+  def getGroupPurchases(login: String, groupNameOptional: Option[String] = None): List[Purchase] = {
+    val groupName = groupNameOptional match {
+      case Some(groupNameVal: String) => groupNameVal
+      case _ => getDefaultGroupName(login)
+    }
+    db.getGroupIdBy(login, groupName) match {
+      case Some(id: Int) =>
+        db.getPurchasesFromGroup(id)
+      case _ =>
+        println("No group with groupName: " + groupName + " and login: " + login)
+        List[Purchase]()
+    }
+  }
+
+  def getDefaultGroupName(login: String): String = {
     db.getDefaultUsersGroup(login) match {
       case Some(groupName: String) => groupName
       case _ =>
@@ -32,8 +47,13 @@ class Logic {
     db.getAllPurchases
   }
 
-  def savePurchase(purchase: Purchase) = {
+  def savePurchase(login: String, purchaseData: PurchaseData): Purchase = {
+    val purchase = db.getGroupIdBy(login, purchaseData.groupName) match {
+      case Some(id: Int) =>
+        new Purchase(purchaseData.product, purchaseData.amount, login, id)
+    }
     db.saveInDB(purchase)
+    purchase
   }
 
   def getUsersInGroup(groupId: Int): Option[List[User]] = {
@@ -140,14 +160,14 @@ class Logic {
     }
   }
 
-  def getGroupedProductFromGroup(login: String, groupID: Int) = {
-    db.getGroupedProductFromGroup(login, groupID)
-    //    array.foreach((a: String) => println(a))
-    //    DBAccess.getAllPurchases.groupBy(pur => pur.productName)
-    //      .foreach((para: (String, List[Purchase])) => {
-    //        val (product, list) = para
-    //        list.sum()
-    //      })
+  def getGroupedProductFromGroup(login: String, groupName: String) = {
+    db.getGroupIdBy(login, groupName) match {
+      case Some(id: Int) =>
+        db.getGroupedProductFromGroup(login, id)
+      case _ =>
+        println("Something Went Wrong")
+        List[Purchase]()
+    }
   }
 }
 
@@ -155,7 +175,7 @@ object Logic {
   val logic = new Logic
   val minLoginSize = 4
   val minPassSize = 4
-  val defaultGroupName = "First budget"
+  val defaultGroupName = "First_budget"
 
   def apply() = {
     logic
