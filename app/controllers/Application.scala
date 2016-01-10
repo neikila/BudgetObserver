@@ -42,7 +42,12 @@ class Application extends Controller {
       purchaseData => {
         authService.getLoginBySessionID(Utils.getSessionID(request, purchaseData)) match {
           case login: String =>
-            Ok(logic.savePurchase(login, purchaseData).toJson)
+            logic.savePurchase(login, purchaseData) match {
+              case Some(purchase: Purchase) =>
+                Ok(purchase.toJson)
+              case _ =>
+                Ok(ErrorMessage.noGroupWithSuchName)
+            }
           case _ =>
             Ok(ErrorMessage.notAuthorised).withNewSession
         }

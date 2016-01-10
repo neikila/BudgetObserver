@@ -14,6 +14,7 @@ object ErrorMessage {
   private val wrongAuthCode = 6
   private val suchUserExistCode = 7
   private val passwordsDifferCode = 8
+  private val noSuchGroup = 9
 
   val notAuthorised = {
     Json.obj(
@@ -76,6 +77,13 @@ object ErrorMessage {
     Json.obj(
       "error" -> "Passwords differ",
       "code" -> passwordsDifferCode
+    )
+  }
+
+  val noGroupWithSuchName = {
+    Json.obj(
+      "error" -> "No group with such groupName",
+      "code" -> noSuchGroup
     )
   }
 }

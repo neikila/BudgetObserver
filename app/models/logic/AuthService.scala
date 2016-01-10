@@ -15,7 +15,7 @@ class AuthService {
   var mapSessionToLogin = new HashMap[String, String]
   var mapLoginToSession = new HashMap[String, String]
   val db = new DBService
-  val appLogic = AppService()
+  val appService = AppService()
 
   def auth(login: String, pass: String): Option[String] = {
     db.getLoginData(login) match {
@@ -89,7 +89,7 @@ class AuthService {
           Some("UserExist")
         case _ =>
           db.saveUser(new User(signupData.login, signupData.name, signupData.surname, signupData.email))
-          appLogic.createGroup(AppService.defaultGroupName, signupData.login)
+          appService.createGroup(AppService.defaultGroupName, signupData.login)
           val loginData = new Login(signupData.login, signupData.password)
           db.saveLogin(loginData)
           Some(login(loginData))
