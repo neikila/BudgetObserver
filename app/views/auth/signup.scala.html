@@ -32,7 +32,7 @@
             var prevErr = -1;
             $(document).ready(function () {
                 var errorEl = $("div.alert");
-                $(document).xpathEvaluate("//a[contains(text(),'Signup')]/..").addClass("active")
+                $(document).xpathEvaluate("//a[contains(text(),'Signup')]/..").addClass("active");
                 $("#signup_but").click(function(){
                     errorEl.slideUp("slow");
                     postJSON("@routes.AuthController.signup", {

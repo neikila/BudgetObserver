@@ -100,6 +100,10 @@ class AppService {
         List[Purchase]()
     }
   }
+
+  def getUser(login: String): Option[User] = {
+    db.getUser(login)
+  }
 }
 
 object AppService {

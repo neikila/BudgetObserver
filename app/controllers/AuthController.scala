@@ -1,5 +1,6 @@
 package controllers
 
+import models.User
 import models.logic.{AuthService, AppService}
 import play.api._
 import play.api.data._
@@ -78,11 +79,33 @@ class AuthController extends Controller {
     )
   }
 
+  def getUserData = Action { request =>
+    authService.getLoginBySessionID(request.session.get(Utils.session_tag)) match {
+      case login: String =>
+        logic.getUser(login) match {
+          case Some(user: User) =>
+            Ok(Json.obj(
+              "isAuth" -> true,
+              "user" -> user.toJson
+            ))
+          case _ =>
+            // TODO check
+            Ok(ErrorMessage.errorWhileHandlingRequest)
+        }
+      case _ =>
+        Ok(Json.obj(
+          "isAuth" -> false
+        ))
+    }
+  }
+
   def logout = Action { request =>
     authService.getLoginBySessionID(request.session.get(Utils.session_tag)) match {
       case login: String =>
         authService.logout(login)
       case _ =>
+        // TODO check
+        println("Something went wong")
     }
     Redirect(routes.Application.index).withNewSession
   }
