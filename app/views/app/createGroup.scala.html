@@ -31,7 +31,7 @@
                     }, function(json){
                         console.log(json);
                         if ('error' in json) {
-                            var errorMessage = "<strong>Ups!</strong> You have already have group with such name.";
+                            var errorMessage = "<strong>Ups!</strong> You already have budget with such name.<br>Try another budget name.";
                             if (json.code == 7) {
                                 errorMessage = "<strong>Oh snap!</strong> Someone is already using this login."
                             }

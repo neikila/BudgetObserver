@@ -64,7 +64,7 @@ class AppService {
     db.getGroup(groupID)
   }
 
-  def createGroup(groupName: String, author: String): Boolean = {
+  def createDefaultGroup(groupName: String, author: String): Boolean = {
     db.createGroup(author) match {
       case Some(id: Long) =>
         db.includeUserInGroup(id, author, groupName)
@@ -72,6 +72,22 @@ class AppService {
       case _ =>
         println("This will never happen. I Hope...")
         false
+    }
+  }
+
+  def createGroup(groupName: String, description: String, author: String): Boolean = {
+    db.getGroupIdBy(author, groupName) match {
+      case Some(id: Int) =>
+        false
+      case _ =>
+        db.createGroup(author, description) match {
+          case Some(id: Long) =>
+            db.includeUserInGroup(id, author, groupName)
+            true
+          case _ =>
+            println("This will never happen. Only if some error in db.createGroup")
+            false
+        }
     }
   }
 

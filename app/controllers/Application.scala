@@ -99,11 +99,15 @@ class Application extends Controller {
       groupData => {
         authService.getLoginBySessionID(Utils.getSessionID(request, groupData)) match {
           case login: String =>
-            logic.createGroup(groupData.groupName, login)
-            Ok(Json.obj(
-              "groupName" -> groupData.groupName,
-              "author" -> login
-            ))
+            logic.createGroup(groupData.groupName, groupData.description, login) match {
+              case true =>
+                Ok(Json.obj(
+                  "groupName" -> groupData.groupName,
+                  "author" -> login
+                ))
+              case _ =>
+                Ok(ErrorMessage.suchGroupNameAlreadyExist)
+            }
           case _ =>
             Ok(ErrorMessage.errorWhileHandlingRequest)
         }

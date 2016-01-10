@@ -89,7 +89,7 @@ class AuthService {
           Some("UserExist")
         case _ =>
           db.saveUser(new User(signupData.login, signupData.name, signupData.surname, signupData.email))
-          appService.createGroup(AppService.defaultGroupName, signupData.login)
+          appService.createDefaultGroup(AppService.defaultGroupName, signupData.login)
           val loginData = new Login(signupData.login, signupData.password)
           db.saveLogin(loginData)
           Some(login(loginData))

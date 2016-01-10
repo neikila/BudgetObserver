@@ -91,7 +91,7 @@ class AuthSpec extends PlaySpec with MockitoSugar {
       when(mockDB.saveLogin(any[Login])) thenReturn 0
 
       val mockAppService = mock[AppService]
-      when(mockAppService.createGroup(any[String], any[String])) thenReturn true
+      when(mockAppService.createDefaultGroup(any[String], any[String])) thenReturn true
 
       val authService = new AuthService() {
         override val db = mockDB

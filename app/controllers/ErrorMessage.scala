@@ -14,7 +14,8 @@ object ErrorMessage {
   private val wrongAuthCode = 6
   private val suchUserExistCode = 7
   private val passwordsDifferCode = 8
-  private val noSuchGroup = 9
+  private val noGroupWithSuchNameCode = 9
+  private val suchGroupNameAlreadyExistCode = 10
 
   val notAuthorised = {
     Json.obj(
@@ -83,7 +84,14 @@ object ErrorMessage {
   val noGroupWithSuchName = {
     Json.obj(
       "error" -> "No group with such groupName",
-      "code" -> noSuchGroup
+      "code" -> noGroupWithSuchNameCode
+    )
+  }
+
+  val suchGroupNameAlreadyExist = {
+    Json.obj(
+      "error" -> "Group with such name already exist",
+      "code" -> suchGroupNameAlreadyExistCode
     )
   }
 }
