@@ -1,6 +1,6 @@
 package controllers
 
-import models.Logic
+import models.logic
 import play.api.libs.json.JsValue
 import play.api.mvc.{AnyContent, Request}
 

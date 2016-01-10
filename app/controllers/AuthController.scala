@@ -1,6 +1,7 @@
 package controllers
 
-import models.Logic
+import models.logic
+import models.logic.{AuthService, AppService}
 import play.api._
 import play.api.data._
 import play.api.data.Form
@@ -14,10 +15,11 @@ import play.api.libs.functional.syntax._
   * Created by neikila on 28.12.15.
   */
 class AuthController extends Controller {
-  val logic = Logic()
+  val logic = AppService()
+  val authService = AuthService()
 
   def getLoginPage = Action { request =>
-    logic.getLoginBySessionID(Utils.getSessionID(request)) match {
+    authService.getLoginBySessionID(Utils.getSessionID(request)) match {
       case login: String =>
         Redirect(routes.Application.purchases(""))
       case _ =>
@@ -26,7 +28,7 @@ class AuthController extends Controller {
   }
 
   def getSignupPage = Action { request =>
-    logic.getLoginBySessionID(Utils.getSessionID(request)) match {
+    authService.getLoginBySessionID(Utils.getSessionID(request)) match {
       case login: String => BadRequest("You are already authorised")
       case _ => Ok(views.html.auth.signup("Sign up page"))
     }
@@ -36,11 +38,11 @@ class AuthController extends Controller {
     request.body.validate[AuthController.SignupData].fold(
       error => BadRequest(ErrorMessage.wrongFormat),
       signupData => {
-        logic.getLoginBySessionID(Utils.getSessionID(request, signupData)) match {
+        authService.getLoginBySessionID(Utils.getSessionID(request, signupData)) match {
           case login: String =>
             Ok(ErrorMessage.alreadyAuthorised)
           case _ =>
-            logic.createUser(signupData) match {
+            authService.createUser(signupData) match {
               case Some("UserExist") => Ok(ErrorMessage.suchUserExist)
               case Some("PasswordsDiffer") => Ok(ErrorMessage.passwordsDiffer)
               case Some(session: String) =>
@@ -63,11 +65,11 @@ class AuthController extends Controller {
         Ok(ErrorMessage.wrongFormat(extraMessage))
       },
       loginData =>
-        logic.getLoginBySessionID(request.session.get(Utils.session_tag)) match {
+        authService.getLoginBySessionID(request.session.get(Utils.session_tag)) match {
           case login: String =>
             Ok(ErrorMessage.alreadyAuthorised)
           case _ =>
-            logic.auth(loginData.login, loginData.pass) match {
+            authService.auth(loginData.login, loginData.pass) match {
               case Some(session: String) =>
                 Ok(JSONResponse.success)
                   .withSession(request.session + (Utils.session_tag -> session))
@@ -78,9 +80,9 @@ class AuthController extends Controller {
   }
 
   def logout = Action { request =>
-    logic.getLoginBySessionID(request.session.get(Utils.session_tag)) match {
+    authService.getLoginBySessionID(request.session.get(Utils.session_tag)) match {
       case login: String =>
-        logic.logout(login)
+        authService.logout(login)
       case _ =>
     }
     Redirect(routes.Application.index).withNewSession

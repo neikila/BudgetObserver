@@ -1,82 +1,21 @@
-package models
+package models.logic
 
 import java.util.Base64
 
-import controllers.Application.PurchaseData
 import controllers.AuthController.SignupData
+import models.{User, Login, DBService}
 
 import scala.collection.immutable.HashMap
 import scala.util.Random
 
 /**
-  * Created by neikila on 25.12.15.
+  * Created by neikila on 10.01.16.
   */
-class Logic {
+class AuthService {
   var mapSessionToLogin = new HashMap[String, String]
   var mapLoginToSession = new HashMap[String, String]
   val db = new DBService
-
-  def getPurchases(username: String) = {
-    db.getPurchases(username)
-  }
-
-  def getGroupPurchases(login: String, groupNameOptional: Option[String] = None): List[Purchase] = {
-    val groupName = groupNameOptional match {
-      case Some(groupNameVal: String) => groupNameVal
-      case _ => getDefaultGroupName(login)
-    }
-    db.getGroupIdBy(login, groupName) match {
-      case Some(id: Int) =>
-        db.getPurchasesFromGroup(id)
-      case _ =>
-        println("No group with groupName: " + groupName + " and login: " + login)
-        List[Purchase]()
-    }
-  }
-
-  def getDefaultGroupName(login: String): String = {
-    db.getDefaultUsersGroup(login) match {
-      case Some(groupName: String) => groupName
-      case _ =>
-        println("It will never happen. Method: Logic.getDefaultGroupName")
-        "Error"
-    }
-  }
-
-  def getAllPurchases = {
-    db.getAllPurchases
-  }
-
-  def savePurchase(login: String, purchaseData: PurchaseData): Purchase = {
-    val purchase = db.getGroupIdBy(login, purchaseData.groupName) match {
-      case Some(id: Int) =>
-        new Purchase(purchaseData.product, purchaseData.amount, login, id)
-    }
-    db.saveInDB(purchase)
-    purchase
-  }
-
-  def getUsersInGroup(groupId: Int): Option[List[User]] = {
-    val list = db.getUsersInGroup(groupId)
-    if (list isEmpty) {
-      None
-    } else {
-      Some(list)
-    }
-  }
-
-  def getGroup(groupID: Int) = {
-    db.getGroup(groupID)
-  }
-
-  def createGroup(groupName: String, author: String) = {
-    db.createGroup(author) match {
-      case Some(id: Long) =>
-        db.includeUserInGroup(id, author, groupName)
-      case _ =>
-        println("This will never happen. I Hope...")
-    }
-  }
+  val appLogic = AppService()
 
   def auth(login: String, pass: String): Option[String] = {
     db.getLoginData(login) match {
@@ -106,8 +45,8 @@ class Logic {
   }
 
   def createSessionID(loginData: Login): String = {
-    val base = shuffleString(loginData.login).substring(0, Logic.minLoginSize) +
-      shuffleString(loginData.password).substring(0, Logic.minPassSize)
+    val base = shuffleString(loginData.login).substring(0, AuthService.minLoginSize) +
+      shuffleString(loginData.password).substring(0, AuthService.minPassSize)
     Base64.getEncoder.encode((
       loginData.login + shuffleString(Base64.getEncoder.encode(shuffleString(base).getBytes).toString))
       .getBytes)
@@ -150,7 +89,7 @@ class Logic {
           Some("UserExist")
         case _ =>
           db.saveUser(new User(signupData.login, signupData.name, signupData.surname, signupData.email))
-          createGroup(Logic.defaultGroupName, signupData.login)
+          appLogic.createGroup(AppService.defaultGroupName, signupData.login)
           val loginData = new Login(signupData.login, signupData.password)
           db.saveLogin(loginData)
           Some(login(loginData))
@@ -159,25 +98,14 @@ class Logic {
       Some("PasswordsDiffer")
     }
   }
-
-  def getGroupedProductFromGroup(login: String, groupName: String) = {
-    db.getGroupIdBy(login, groupName) match {
-      case Some(id: Int) =>
-        db.getGroupedProductFromGroup(login, id)
-      case _ =>
-        println("Something Went Wrong")
-        List[Purchase]()
-    }
-  }
 }
 
-object Logic {
-  val logic = new Logic
+object AuthService {
+  val authService = new AuthService
   val minLoginSize = 4
   val minPassSize = 4
-  val defaultGroupName = "First_budget"
 
   def apply() = {
-    logic
+    authService
   }
 }

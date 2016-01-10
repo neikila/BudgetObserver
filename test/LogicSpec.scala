@@ -1,6 +1,6 @@
 import controllers.AuthController.SignupData
 import controllers.IncomeData
-import models.{User, Login, DBService, Logic}
+import models.{User, Login, DBService, logic}
 import org.junit.runner.RunWith
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec

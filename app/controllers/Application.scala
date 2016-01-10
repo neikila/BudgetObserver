@@ -1,6 +1,7 @@
 package controllers
 
-import models.{User, Purchase, Logic}
+import models.logic.{AppService, AuthService}
+import models.{User, Purchase, logic}
 import play.api._
 import play.api.data._
 import play.api.data.Form
@@ -11,10 +12,11 @@ import play.api.libs.json._
 import play.api.libs.functional.syntax._
 
 class Application extends Controller {
-  val logic = Logic()
+  val logic = AppService()
+  val authService = AuthService()
 
   def purchases(groupNameRequest: String = "") = Action { request =>
-    logic.getLoginBySessionID(Utils.getSessionID(request)) match {
+    authService.getLoginBySessionID(Utils.getSessionID(request)) match {
       case login: String =>
         val groupName =
           if (groupNameRequest.length() > 0) groupNameRequest
@@ -38,7 +40,7 @@ class Application extends Controller {
     request.body.validate[Application.PurchaseData].fold(
       error => BadRequest(ErrorMessage.notAuthorised),
       purchaseData => {
-        logic.getLoginBySessionID(Utils.getSessionID(request, purchaseData)) match {
+        authService.getLoginBySessionID(Utils.getSessionID(request, purchaseData)) match {
           case login: String =>
             Ok(logic.savePurchase(login, purchaseData).toJson)
           case _ =>
@@ -69,7 +71,7 @@ class Application extends Controller {
   )
 
   def getGroupPieData(groupName: String) = Action { request =>
-    logic.getLoginBySessionID(Utils.getSessionID(request)) match {
+    authService.getLoginBySessionID(Utils.getSessionID(request)) match {
       case login: String =>
         var last = -1
         Ok(Json.toJson(logic.getGroupedProductFromGroup(login, groupName).map(pur => {
@@ -90,7 +92,7 @@ class Application extends Controller {
     request.body.validate[Application.GroupData].fold(
       error => BadRequest(ErrorMessage.wrongFormat),
       groupData => {
-        logic.getLoginBySessionID(Utils.getSessionID(request, groupData)) match {
+        authService.getLoginBySessionID(Utils.getSessionID(request, groupData)) match {
           case login: String =>
             logic.createGroup(groupData.groupName, login)
             Ok(Json.obj(
@@ -105,8 +107,8 @@ class Application extends Controller {
   }
 
   def getCreateGroup = Action { request =>
-    logic.getLoginBySessionID(Utils.getSessionID(request)) match {
-      case login =>
+    authService.getLoginBySessionID(Utils.getSessionID(request)) match {
+      case login: String =>
         Ok(views.html.app.createGroup())
       case _ =>
         Redirect(routes.AuthController.getLoginPage).withNewSession
