@@ -1,6 +1,5 @@
 package controllers
 
-import models.logic
 import models.logic.{AuthService, AppService}
 import play.api._
 import play.api.data._
@@ -92,15 +91,6 @@ class AuthController extends Controller {
 
 object AuthController {
   case class LoginData(login: String, pass: String, override val sessionID: Option[String]) extends IncomeData
-  def getLoginData = {
-    Form(
-      mapping(
-        "login" -> text,
-        "password" -> text,
-        Utils.session_tag -> optional(text)
-      )(LoginData.apply)(LoginData.unapply)
-    )
-  }
 
   implicit val loginReads: Reads[LoginData] = (
     (JsPath \ "login") .read[String].filter((login: String) => login.length > 3) and
@@ -111,19 +101,6 @@ object AuthController {
   case class SignupData(login: String, password: String, password_repeat: String,
                         name: String, surname: String, email: String,
                         override val sessionID: Option[String]) extends IncomeData
-  def getSignUpData = {
-    Form(
-      mapping(
-        "login" -> text,
-        "password" -> text,
-        "password_repeat" -> text,
-        "name" -> text,
-        "surname" -> text,
-        "email" -> text,
-        Utils.session_tag -> optional(text)
-      )(SignupData.apply)(SignupData.unapply)
-    )
-  }
 
   implicit val signupReads: Reads[SignupData] = (
     (JsPath \ "login") .read[String] and
