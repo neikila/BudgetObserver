@@ -105,6 +105,7 @@ var purchasesPage = function() {
                     page.setGroupName(json.groupName);
                     var tableEl = $("tbody");
                     var indexPurchase = 1;
+                    console.log("json: " + json);
                     tableEl.empty();
                     json.purchases.reverse().forEach(function(purchase) {
                         tableEl.append("<tr>" +

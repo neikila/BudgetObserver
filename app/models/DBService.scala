@@ -114,15 +114,16 @@ class DBService {
     }
   }
 
-  def includeUserInGroup(groupID: Long, login: String, groupName: String) = {
+  def includeUserInGroup(groupID: Long, login: String, groupName: String, isDefault: Boolean = false) = {
     DB.withConnection { implicit c =>
       SQL(
-        "insert into usersToGroup(groupID, login, groupName) " +
-          "values({groupID}, {login}, {groupName});"
+        "insert into usersToGroup(groupID, login, groupName, isDefault) " +
+          "values({groupID}, {login}, {groupName}, {isDefault});"
       ).on(
         "groupID" -> groupID,
         "groupName" -> groupName,
-        "login" -> login
+        "login" -> login,
+        "isDefault" -> {if (isDefault) "true" else "false"}
       ).executeUpdate()
     }
   }

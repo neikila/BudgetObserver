@@ -29,7 +29,7 @@ class AuthController extends Controller {
 
   def getSignupPage = Action { request =>
     authService.getLoginBySessionID(Utils.getSessionID(request)) match {
-      case login: String => BadRequest("You are already authorised")
+      case login: String => Redirect(routes.Application.purchasesDefault)
       case _ => Ok(views.html.auth.signup("Sign up page"))
     }
   }
@@ -46,8 +46,16 @@ class AuthController extends Controller {
               case Some("UserExist") => Ok(ErrorMessage.suchUserExist)
               case Some("PasswordsDiffer") => Ok(ErrorMessage.passwordsDiffer)
               case Some(session: String) =>
-                Ok(JSONResponse.success)
-                  .withSession(request.session + (Utils.session_tag -> session))
+                logic.getUser(signupData.login) match {
+                  case Some(user: User) =>
+                    Ok(Json.obj(
+                      "isAuth" -> true,
+                      "user" -> user.toJson
+                    )).withSession(request.session + (Utils.session_tag -> session))
+                  case _ =>
+                    // TODO check
+                    Ok(ErrorMessage.errorWhileHandlingRequest)
+                }
               case _ => BadRequest(ErrorMessage.errorWhileHandlingRequest)
             }
         }
@@ -71,8 +79,16 @@ class AuthController extends Controller {
           case _ =>
             authService.auth(loginData.login, loginData.pass) match {
               case Some(session: String) =>
-                Ok(JSONResponse.success)
-                  .withSession(request.session + (Utils.session_tag -> session))
+                logic.getUser(loginData.login) match {
+                  case Some(user: User) =>
+                    Ok(Json.obj(
+                      "isAuth" -> true,
+                      "user" -> user.toJson
+                    )).withSession(request.session + (Utils.session_tag -> session))
+                  case _ =>
+                    // TODO check
+                    Ok(ErrorMessage.errorWhileHandlingRequest)
+                }
               case _ => Ok(ErrorMessage.wrongAuth)
             }
         }

@@ -67,7 +67,7 @@ class AppService {
   def createDefaultGroup(groupName: String, author: String): Boolean = {
     db.createGroup(author) match {
       case Some(id: Long) =>
-        db.includeUserInGroup(id, author, groupName)
+        db.includeUserInGroup(id, author, groupName, isDefault = true)
         true
       case _ =>
         println("This will never happen. I Hope...")

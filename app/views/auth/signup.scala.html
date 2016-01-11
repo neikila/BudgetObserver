@@ -62,6 +62,9 @@
                                 errorEl.slideDown("slow");
                             });
                         } else {
+                            user.deauth();
+                            var userJs = json.user;
+                            user.init(userJs.login, userJs.email, userJs.name, userJs.surname);
                             window.location.replace("/purchases");
                         }
                     });
