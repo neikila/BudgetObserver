@@ -27,7 +27,7 @@
                         "login": $("#login").val(),
                         "password": $("#password").val()
                     }, function(json){
-                        sessionStorage.removeItem("isAuth");
+                        navbarController.invalidate();
                         console.log(json);
                         if ('error' in json) {
                             var errorMessage = "<strong>Oh snap!</strong> Error in login or password. Try once more.";
