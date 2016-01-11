@@ -13,17 +13,17 @@ class AppService {
     db.getPurchases(username)
   }
 
-  def getGroupPurchases(login: String, groupNameOptional: Option[String] = None): List[Purchase] = {
-    val groupName = groupNameOptional match {
-      case Some(groupNameVal: String) => groupNameVal
+  def getGroupPurchases(login: String, groupNameRequest: Option[String]): (String, Option[List[Purchase]]) = {
+    val groupName = groupNameRequest match {
+      case Some(value: String) => value
       case _ => getDefaultGroupName(login)
     }
     db.getGroupIdBy(login, groupName) match {
       case Some(id: Int) =>
-        db.getPurchasesFromGroup(id)
+        (groupName, Some(db.getPurchasesFromGroup(id)))
       case _ =>
         println("No group with groupName: " + groupName + " and login: " + login)
-        List[Purchase]()
+        (groupName, None)
     }
   }
 

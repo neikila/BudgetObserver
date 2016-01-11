@@ -1,12 +1,12 @@
 package controllers
 
+import com.ning.http.util.UTF8UrlDecoder
 import models.logic.{AppService, AuthService}
 import models.{User, Purchase, logic}
 import play.api._
 import play.api.data._
 import play.api.data.Form
 import play.api.data.Forms._
-import play.api.libs.json.{JsPath, Reads, Json}
 import play.api.mvc._
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
@@ -15,16 +15,41 @@ class Application extends Controller {
   val logic = AppService()
   val authService = AuthService()
 
-  def purchases(groupNameRequest: String = "") = Action { request =>
+  def purchasesWithGroupName(groupNameRequest: String) = purchases(Some(groupNameRequest))
+
+  def purchasesDefault = purchases(None)
+
+  def purchases(groupNameRequest: Option[String]) = Action { request =>
     authService.getLoginBySessionID(Utils.getSessionID(request)) match {
       case login: String =>
-        val groupName =
-          if (groupNameRequest.length() > 0) groupNameRequest
-          else logic.getDefaultGroupName(login)
-        val list = logic.getGroupPurchases(login, Some(groupName))
-        Ok(views.html.app.purchases(login, list, groupName))
+        Ok(views.html.app.purchases())
       case _ =>
         Redirect(routes.AuthController.getLoginPage).withNewSession
+    }
+  }
+
+  def getPurchasesJSONDefault = getPurchasesJSON(None)
+
+  implicit val purchaseWrites: Writes[Purchase] = (
+    (__ \ "login").write[String] and
+      (__ \ "productName").write[String] and
+      (__ \ "amount").write[Int]
+    )(unlift((purchase: Purchase) => Some(purchase.login, purchase.productName, purchase.amount)))
+
+  def getPurchasesJSON(groupNameRequest: Option[String]) = Action { request =>
+    authService.getLoginBySessionID(Utils.getSessionID(request)) match {
+      case login: String =>
+        logic.getGroupPurchases(login, groupNameRequest) match {
+          case (groupName, Some(list)) =>
+            Ok(Json.obj(
+              "groupName" -> groupName,
+              "purchases" -> list
+            ))
+          case (groupName, _) =>
+            Ok(ErrorMessage.noGroupWithSuchName)
+        }
+      case _ =>
+        Ok(ErrorMessage.notAuthorised)
     }
   }
 
