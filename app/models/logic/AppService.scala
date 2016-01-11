@@ -101,8 +101,10 @@ class AppService {
     }
   }
 
-  def getUser(login: String): Option[User] = {
-    db.getUser(login)
+  def getUser(login: String): (Option[User], String, List[String]) = {
+    val defGroup = getDefaultGroupName(login)
+    val otherGroups = db.getAllUserGroups(login).filter((groupName: String) => groupName != defGroup)
+    (db.getUser(login), defGroup, otherGroups)
   }
 }
 

@@ -12,7 +12,7 @@ var userConstructor = function() {
                 success: function(json){
                     console.log(json);
                     if (json.isAuth) {
-                        user.init(json.user.login, json.user.email, json.user.name, json.user.surname);
+                        user.init(json.user.login, json.user.email, json.user.name, json.user.surname, json.defaultGroup, json.otherGroups);
                     } else {
                         user.init();
                     }
@@ -28,18 +28,24 @@ var userConstructor = function() {
         user.email = undefined;
         user.username = undefined;
         user.surname = undefined;
+        user.defaultGroup = undefined;
+        user.otherGroups = undefined;
     };
     user.toDefault();
 
-    user.init = function(loginPar, emailPar, namePar, surnamePar) {
-        console.log("length = " + arguments.length);
+    user.init = function(loginPar, emailPar, namePar, surnamePar, defaultGroupPar, otherGroupsPar) {
         user._isInitialised = true;
         if(arguments.length != 0) {
+            console.log("otherGroups: ");
+            console.log(otherGroupsPar);
+            console.log("defGroup: ");
+            console.log(defaultGroupPar);
             user.login = loginPar;
             user.email = emailPar;
             user.username = namePar;
-            console.log("name: " + namePar + " " + user.username);
             user.surname = surnamePar;
+            user.defaultGroup = defaultGroupPar;
+            user.otherGroups = otherGroupsPar;
             user.auth();
         }
         user.save();
@@ -64,7 +70,7 @@ var userConstructor = function() {
         console.log(user.isAuth());
         // TODO some action
         if (shouldUpdate)
-            navbarController.updateRight();
+            navbarController.update();
     };
 
     user.toJSON = function () {
@@ -74,7 +80,9 @@ var userConstructor = function() {
             "username": user.username,
             "surname": user.surname,
             "isAuthorised": user._isAuthorised,
-            "isInit": user._isInitialised
+            "isInit": user._isInitialised,
+            "defaultGroup": user.defaultGroup,
+            "otherGroups": user.otherGroups
         })
     };
 
@@ -85,7 +93,9 @@ var userConstructor = function() {
         user.username = userJSON.username;
         user.surname = userJSON.surname;
         user._isAuthorised = userJSON.isAuthorised;
-        user._isInitialised= userJSON.isInitialised;
+        user._isInitialised = userJSON.isInitialised;
+        user.defaultGroup = userJSON.defaultGroup;
+        user.otherGroups = userJSON.otherGroups;
     };
 
     user.deauth = function(shouldUpdate) {
@@ -93,7 +103,7 @@ var userConstructor = function() {
         sessionStorage.removeItem("user");
         // TODO some action
         if (!shouldUpdate)
-            navbarController.updateRight();
+            navbarController.update();
     };
 
     return user;
@@ -104,21 +114,28 @@ var navbarController = function() {
 
     var isAuth = false;
 
-    controller.updateRight = function() {
-        console.log("updateRight + isAuth: " + user.isAuth());
-        var navbarRight = $("ul.navbar-right");
+    controller.update = function() {
         if (user.isAuth() != isAuth) {
-            navbarRight.empty();
-            console.log("empty");
             isAuth = user.isAuth();
-            if (isAuth) {
-                navbarRight.append('<p class="navbar-text">Signed in as <a href="#" class="navbar-link">' + user.username +
-                    '</a></p><li><a href="/logout"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>');
-                $("ul.navbar-right li a").click(user.deauth);
-            } else {
-                navbarRight.append('<li><a href="/login"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>' +
-                    '<li><a href="/signup"><span class="glyphicon glyphicon-user"></span> Signup</a></li>');
-            }
+            controller.updateRight();
+            controller.reloadDropDown();
+        }
+    };
+
+    controller.reloadDropDown = function() {
+        //navbarRight.empty();
+    };
+
+    controller.updateRight = function() {
+        var navbarRight = $("ul.navbar-right");
+        navbarRight.empty();
+        if (isAuth) {
+            navbarRight.append('<p class="navbar-text">Signed in as <a href="#" class="navbar-link">' + user.username +
+                '</a></p><li><a href="/logout"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>');
+            $("ul.navbar-right li a").click(user.deauth);
+        } else {
+            navbarRight.append('<li><a href="/login"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>' +
+                '<li><a href="/signup"><span class="glyphicon glyphicon-user"></span> Signup</a></li>');
         }
     };
 
@@ -133,4 +150,4 @@ if (sessionStorage.user) {
 } else {
     user();
 }
-navbarController.updateRight();
+navbarController.update();

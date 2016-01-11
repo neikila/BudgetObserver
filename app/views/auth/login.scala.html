@@ -29,7 +29,8 @@
                     }, function(json){
                         var userJs = json.user;
                         user.deauth();
-                        user.init(userJs.login, userJs.email, userJs.name, userJs.surname);
+                        user.init(userJs.login, userJs.email, userJs.name, userJs.surname, json.defaultGroup, json.otherGroups);
+                        console.log(json);
                         if ('error' in json) {
                             var errorMessage = "<strong>Oh snap!</strong> Error in login or password. Try once more.";
                             if (json.code == 2) {

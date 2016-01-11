@@ -64,7 +64,7 @@
                         } else {
                             user.deauth();
                             var userJs = json.user;
-                            user.init(userJs.login, userJs.email, userJs.name, userJs.surname);
+                            user.init(userJs.login, userJs.email, userJs.name, userJs.surname, json.defaultGroup, json.otherGroups);
                             window.location.replace("/purchases");
                         }
                     });

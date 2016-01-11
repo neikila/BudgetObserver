@@ -45,17 +45,7 @@ class AuthController extends Controller {
             authService.createUser(signupData) match {
               case Some("UserExist") => Ok(ErrorMessage.suchUserExist)
               case Some("PasswordsDiffer") => Ok(ErrorMessage.passwordsDiffer)
-              case Some(session: String) =>
-                logic.getUser(signupData.login) match {
-                  case Some(user: User) =>
-                    Ok(Json.obj(
-                      "isAuth" -> true,
-                      "user" -> user.toJson
-                    )).withSession(request.session + (Utils.session_tag -> session))
-                  case _ =>
-                    // TODO check
-                    Ok(ErrorMessage.errorWhileHandlingRequest)
-                }
+              case Some(session: String) => userResponse(signupData.login).withSession(request.session + (Utils.session_tag -> session))
               case _ => BadRequest(ErrorMessage.errorWhileHandlingRequest)
             }
         }
@@ -78,17 +68,7 @@ class AuthController extends Controller {
             Ok(ErrorMessage.alreadyAuthorised)
           case _ =>
             authService.auth(loginData.login, loginData.pass) match {
-              case Some(session: String) =>
-                logic.getUser(loginData.login) match {
-                  case Some(user: User) =>
-                    Ok(Json.obj(
-                      "isAuth" -> true,
-                      "user" -> user.toJson
-                    )).withSession(request.session + (Utils.session_tag -> session))
-                  case _ =>
-                    // TODO check
-                    Ok(ErrorMessage.errorWhileHandlingRequest)
-                }
+              case Some(session: String) => userResponse(loginData.login).withSession(request.session + (Utils.session_tag -> session))
               case _ => Ok(ErrorMessage.wrongAuth)
             }
         }
@@ -97,21 +77,8 @@ class AuthController extends Controller {
 
   def getUserData = Action { request =>
     authService.getLoginBySessionID(request.session.get(Utils.session_tag)) match {
-      case login: String =>
-        logic.getUser(login) match {
-          case Some(user: User) =>
-            Ok(Json.obj(
-              "isAuth" -> true,
-              "user" -> user.toJson
-            ))
-          case _ =>
-            // TODO check
-            Ok(ErrorMessage.errorWhileHandlingRequest)
-        }
-      case _ =>
-        Ok(Json.obj(
-          "isAuth" -> false
-        ))
+      case login: String => userResponse(login)
+      case _ => Ok(Json.obj("isAuth" -> false))
     }
   }
 
@@ -124,6 +91,21 @@ class AuthController extends Controller {
         println("Something went wong")
     }
     Redirect(routes.Application.index).withNewSession
+  }
+
+  def userResponse(login: String) = {
+    logic.getUser(login) match {
+      case (Some(user: User), defGroup: String, otherGroups: List[String]) =>
+        Ok(Json.obj(
+          "isAuth" -> true,
+          "user" -> user.toJson,
+          "defaultGroup" -> defGroup,
+          "otherGroups" -> otherGroups
+        ))
+      case _ =>
+        // TODO check
+        Ok(ErrorMessage.errorWhileHandlingRequest)
+    }
   }
 }
 

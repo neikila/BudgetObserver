@@ -176,4 +176,11 @@ class DBService {
       ).toList
     }
   }
+
+  def getAllUserGroups(login: String): List[String] = {
+    DB.withConnection { implicit c =>
+      SQL("select groupName from usersToGroup where login = {login};")
+        .on("login" -> login)().map(row => row[String]("groupName")).toList
+    }
+  }
 }
