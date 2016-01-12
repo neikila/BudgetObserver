@@ -1,6 +1,6 @@
 @(message: String, groupId: Int, users: List[User])
 
-@incl.main(message, isLogged = true) {
+@incl.main(message) {
     <h2>Group number #@groupId</h2>
     <ul id="list">
     @for(user <- users) {

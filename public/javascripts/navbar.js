@@ -124,6 +124,7 @@ var navbarController = function() {
 
     controller.reloadDropDown = function() {
         //navbarRight.empty();
+        var dropdownMenu = $("ul.dropdown-menu")
     };
 
     controller.updateRight = function() {

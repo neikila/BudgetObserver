@@ -130,10 +130,15 @@ var purchasesPage = function() {
         pie.attr("height", pieLength);
     };
 
+    page.setUserData = function() {
+        $("h1 a").text(user.username);
+    };
+
     return page;
 }();
 
 purchasesPage.setListeners();
+purchasesPage.setUserData();
 purchasesPage.setPieSize();
 
 $(document).ready(function () {
