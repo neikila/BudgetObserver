@@ -29,6 +29,7 @@ class Application extends Controller {
   }
 
   def getPurchasesJSONDefault = getPurchasesJSON(None)
+  def getPurchasesJSONWithGroupName(groupName: String) = getPurchasesJSON(Some(groupName))
 
   implicit val purchaseWrites: Writes[Purchase] = (
     (__ \ "login").write[String] and

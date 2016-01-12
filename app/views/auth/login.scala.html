@@ -27,9 +27,6 @@
                         "login": $("#login").val(),
                         "password": $("#password").val()
                     }, function(json){
-                        var userJs = json.user;
-                        user.deauth();
-                        user.init(userJs.login, userJs.email, userJs.name, userJs.surname, json.defaultGroup, json.otherGroups);
                         console.log(json);
                         if ('error' in json) {
                             var errorMessage = "<strong>Oh snap!</strong> Error in login or password. Try once more.";
@@ -42,6 +39,9 @@
                                 errorEl.slideDown("slow");
                             });
                         } else {
+                            var userJs = json.user;
+                            user.deauth();
+                            user.init(userJs.login, userJs.email, userJs.name, userJs.surname, json.defaultGroup, json.otherGroups);
                             window.location.replace("/purchases");
                         }
                     });

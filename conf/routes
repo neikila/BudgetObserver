@@ -6,7 +6,7 @@
 GET     /                           controllers.Application.index
 GET     /purchases                  controllers.Application.purchasesDefault
 GET     /:groupName/purchases       controllers.Application.purchasesWithGroupName(groupName)
-GET     /purchasesJSON              controllers.Application.getPurchasesJSONDefault
+GET     /purchasesJSON              controllers.Application.getPurchasesJSONWithGroupName(groupName: String)
 GET     /groupinfo                  controllers.Application.groupInfo(id: Int ?= 0)
 GET     /getGroupPieData            controllers.Application.getGroupPieData(groupName: String)
 GET     /documentation              controllers.Application.documentation

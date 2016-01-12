@@ -142,5 +142,9 @@ purchasesPage.setUserData();
 purchasesPage.setPieSize();
 
 $(document).ready(function () {
-    purchasesPage(undefined);
+    if (sessionStorage.groupToShow) {
+        purchasesPage(sessionStorage.groupToShow);
+    } else {
+        purchasesPage(user.defaultGroup);
+    }
 });

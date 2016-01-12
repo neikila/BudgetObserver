@@ -46,7 +46,7 @@ var userConstructor = function() {
             user.surname = surnamePar;
             user.defaultGroup = defaultGroupPar;
             user.otherGroups = otherGroupsPar;
-            user.auth();
+            user.auth(true);
         }
         user.save();
     };
@@ -113,6 +113,7 @@ var navbarController = function() {
     function controller() {}
 
     var isAuth = false;
+    var dropdownMenu = $("ul.nav ul.dropdown-menu");
 
     controller.update = function() {
         if (user.isAuth() != isAuth) {
@@ -122,9 +123,30 @@ var navbarController = function() {
         }
     };
 
+    function appendDropdownMenuItem(groupName) {
+        dropdownMenu.append('<li><a href="/purchases">' + groupName +'</a></li>');
+        dropdownMenu.children().last().click(function(groupNameIn) {
+            var localGroupName = groupNameIn;
+            return function() {
+                sessionStorage.setItem("groupToShow", localGroupName);
+            }
+        }(groupName))
+    }
+
     controller.reloadDropDown = function() {
-        //navbarRight.empty();
-        var dropdownMenu = $("ul.dropdown-menu")
+        dropdownMenu.empty();
+        if (isAuth) {
+            appendDropdownMenuItem(user.defaultGroup);
+            if (user.otherGroups.length > 0) {
+                dropdownMenu.append('<li role="separator" class="divider"></li>');
+                dropdownMenu.append('<li class="dropdown-header">Other budgets</li>');
+                user.otherGroups.forEach(function(group) {
+                    appendDropdownMenuItem(group);
+                });
+            }
+        } else {
+            dropdownMenu.append('<li><a href="#">Example budget</a></li>');
+        }
     };
 
     controller.updateRight = function() {
