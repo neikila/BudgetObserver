@@ -21,7 +21,6 @@ var userConstructor = function() {
         }
     }
 
-    user._isInitialised = false;
     user.toDefault = function() {
         user._isAuthorised = false;
         user.login = undefined;
@@ -34,7 +33,7 @@ var userConstructor = function() {
     user.toDefault();
 
     user.init = function(loginPar, emailPar, namePar, surnamePar, defaultGroupPar, otherGroupsPar) {
-        user._isInitialised = true;
+        $.cookie("isInit", true);
         if(arguments.length != 0) {
             console.log("otherGroups: ");
             console.log(otherGroupsPar);
@@ -52,7 +51,7 @@ var userConstructor = function() {
     };
 
     user.isInit = function() {
-        return user._isInitialised;
+        return $.cookie("isInit") == "true";
     };
 
     user.isAuth = function() {
@@ -80,29 +79,32 @@ var userConstructor = function() {
             "username": user.username,
             "surname": user.surname,
             "isAuthorised": user._isAuthorised,
-            "isInit": user._isInitialised,
             "defaultGroup": user.defaultGroup,
             "otherGroups": user.otherGroups
         })
     };
 
     user.parse = function(str) {
-        userJSON = JSON.parse(str);
-        user.login = userJSON.login;
-        user.email = userJSON.email;
-        user.username = userJSON.username;
-        user.surname = userJSON.surname;
-        user._isAuthorised = userJSON.isAuthorised;
-        user._isInitialised = userJSON.isInitialised;
-        user.defaultGroup = userJSON.defaultGroup;
-        user.otherGroups = userJSON.otherGroups;
+        if (user.isInit()) {
+            userJSON = JSON.parse(str);
+            user.login = userJSON.login;
+            user.email = userJSON.email;
+            user.username = userJSON.username;
+            user.surname = userJSON.surname;
+            user._isAuthorised = userJSON.isAuthorised;
+            user.defaultGroup = userJSON.defaultGroup;
+            user.otherGroups = userJSON.otherGroups;
+        } else {
+            user.deauth()
+        }
     };
 
-    user.deauth = function(shouldUpdate) {
+    user.deauth = function(shouldNotUpdate) {
         user.toDefault();
+        $.removeCookie("isInit");
         sessionStorage.removeItem("user");
         // TODO some action
-        if (!shouldUpdate)
+        if (!shouldNotUpdate)
             navbarController.update();
     };
 

@@ -1,12 +1,7 @@
 package controllers
 
-import com.ning.http.util.UTF8UrlDecoder
 import models.logic.{AppService, AuthService}
-import models.{User, Purchase, logic}
-import play.api._
-import play.api.data._
-import play.api.data.Form
-import play.api.data.Forms._
+import models.{User, Purchase}
 import play.api.mvc._
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
@@ -24,7 +19,7 @@ class Application extends Controller {
       case login: String =>
         Ok(views.html.app.purchases())
       case _ =>
-        Redirect(routes.AuthController.getLoginPage).withNewSession
+        Utils.fullDeauth(Redirect(routes.AuthController.getLoginPage))
     }
   }
 
@@ -75,7 +70,7 @@ class Application extends Controller {
                 Ok(ErrorMessage.noGroupWithSuchName)
             }
           case _ =>
-            Ok(ErrorMessage.notAuthorised).withNewSession
+            Utils.fullDeauth(Ok(ErrorMessage.notAuthorised))
         }
       }
     )
@@ -146,7 +141,7 @@ class Application extends Controller {
       case login: String =>
         Ok(views.html.app.createGroup())
       case _ =>
-        Redirect(routes.AuthController.getLoginPage).withNewSession
+        Utils.fullDeauth(Redirect(routes.AuthController.getLoginPage))
     }
   }
 
@@ -155,7 +150,7 @@ class Application extends Controller {
       case login: String =>
         Ok(views.html.app.groupManaging())
       case _ =>
-        Redirect(routes.AuthController.getLoginPage).withNewSession
+        Utils.fullDeauth(Redirect(routes.AuthController.getLoginPage))
     }
   }
 }

@@ -1,8 +1,7 @@
 package controllers
 
-import models.logic
 import play.api.libs.json.JsValue
-import play.api.mvc.{AnyContent, Request}
+import play.api.mvc.{DiscardingCookie, Result, AnyContent, Request}
 
 /**
   * Created by neikila on 29.12.15.
@@ -20,4 +19,6 @@ object Utils {
   def getSessionID(request: Request[AnyContent]): Option[String] = {
     request.session.get(session_tag)
   }
+
+  def fullDeauth(result: Result): Result = result.discardingCookies(DiscardingCookie("isInit")).withNewSession
 }

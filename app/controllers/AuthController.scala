@@ -23,7 +23,7 @@ class AuthController extends Controller {
       case login: String =>
         Redirect(routes.Application.purchasesDefault)
       case _ =>
-        Ok(views.html.auth.login("Login")).withNewSession
+        Utils.fullDeauth(Ok(views.html.auth.login("Login")))
     }
   }
 
@@ -90,7 +90,7 @@ class AuthController extends Controller {
         // TODO check
         println("Something went wong")
     }
-    Redirect(routes.Application.index).withNewSession
+    Utils.fullDeauth(Redirect(routes.Application.index))
   }
 
   def userResponse(login: String) = {
