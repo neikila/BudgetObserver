@@ -3,3 +3,4 @@
  */
 
 console.log("test");
+navbarController.setPos(positionsEnum.ALL_GROUPS);

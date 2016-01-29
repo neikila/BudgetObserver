@@ -109,13 +109,41 @@ var userConstructor = function() {
     return user;
 };
 
+var positionsEnum = {
+    START_PAGE: -1,
+    HOME: 0,
+    ABOUT: 1,
+    NEW_BUDGET: 2,
+    ALL_GROUPS: 3
+};
+
 var navbarController = function() {
     function controller() {}
 
     var isAuth = false;
+    var currentPos = positionsEnum.START_PAGE;
     var dropdownMenu = $("ul.nav ul.dropdown-menu");
+    var pageChanged = true;
+
+    controller.setPos = function(pos) {
+        if (pos != currentPos) {
+            currentPos = pos;
+            pageChanged = true;
+            controller.update();
+        }
+    };
 
     controller.update = function() {
+        if (pageChanged) {
+            $(".navbar-left li.active").removeClass("active");
+            if (currentPos >= 0) {
+                $(".navbar-left li").eq(currentPos).addClass("active");
+                if (currentPos == positionsEnum.ALL_GROUPS) {
+                    $(".navbar-left li").eq(currentPos + 1).addClass("active");
+                }
+            }
+            pageChanged = false;
+        }
         if (user.isAuth() != isAuth) {
             isAuth = user.isAuth();
             controller.updateRight();

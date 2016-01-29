@@ -148,3 +148,5 @@ $(document).ready(function () {
         purchasesPage(user.defaultGroup);
     }
 });
+
+navbarController.setPos(positionsEnum.HOME);
