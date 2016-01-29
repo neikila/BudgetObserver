@@ -1,7 +1,7 @@
 package controllers
 
 import models.logic.{AppService, AuthService}
-import models.{User, Purchase}
+import models.{Group, User, Purchase}
 import play.api.mvc._
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
@@ -153,6 +153,19 @@ class Application extends Controller {
         Utils.fullDeauth(Redirect(routes.AuthController.getLoginPage))
     }
   }
+
+  def getAllGroups = Action { request =>
+    authService.getLoginBySessionID(Utils.getSessionID(request)) match {
+      case login: String => Ok(Json.toJson(logic.getUsersGroups(login)))
+      case _ => Ok(ErrorMessage.notAuthorised)
+    }
+  }
+
+  implicit val groupWrites: Writes[Group] = (
+    (__ \ "groupName").write[String] and
+      (__ \ "author").write[String] and
+      (__ \ "dateOfCreating").write[String]
+    )(unlift((group: Group) => Some(group.groupName, group.author, group.dateOfCreation.toString)))
 }
 
 object Application {

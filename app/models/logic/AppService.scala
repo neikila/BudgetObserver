@@ -106,6 +106,14 @@ class AppService {
     val otherGroups = db.getAllUserGroups(login).filter((groupName: String) => groupName != defGroup)
     (db.getUser(login), defGroup, otherGroups)
   }
+
+  def getUsersGroups(login: String, isOwnerOnly: Boolean = false) = {
+    if (isOwnerOnly) {
+      db.getUsersGroups(login).filter((group) => group.author == login)
+    } else {
+      db.getUsersGroups(login)
+    }
+  }
 }
 
 object AppService {

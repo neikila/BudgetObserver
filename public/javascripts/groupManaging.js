@@ -4,3 +4,11 @@
 
 console.log("test");
 navbarController.setPos(positionsEnum.ALL_GROUPS);
+
+$.ajax({
+    type: "GET",
+    url: "/usersGroups",
+    success: function(json){
+        console.log(json);
+    }
+});
