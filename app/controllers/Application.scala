@@ -149,6 +149,15 @@ class Application extends Controller {
         Redirect(routes.AuthController.getLoginPage).withNewSession
     }
   }
+
+  def getGroupManaging = Action { request =>
+    authService.getLoginBySessionID(Utils.getSessionID(request)) match {
+      case login: String =>
+        Ok(views.html.app.groupManaging())
+      case _ =>
+        Redirect(routes.AuthController.getLoginPage).withNewSession
+    }
+  }
 }
 
 object Application {

@@ -15,6 +15,7 @@ GET     /logout                     controllers.AuthController.logout
 GET     /signup                     controllers.AuthController.getSignupPage
 GET     /createGroup                controllers.Application.getCreateGroup
 GET     /userData                   controllers.AuthController.getUserData
+GET     /groupManaging              controllers.Application.getGroupManaging
 
 POST    /loginJSON                  controllers.AuthController.loginJSON
 POST    /signup                     controllers.AuthController.signup

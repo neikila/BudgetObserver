@@ -2,6 +2,15 @@
     margin-bottom: 19px;
 }
 
+#navbar ul li a.caret-before {
+    padding-right: 3px;
+}
+
+#navbar ul li a.caret-after {
+    padding-left: 7px;
+    padding-right: 10px;
+}
+
 body {
     background-color: #eee;
     margin-bottom: 60px;
