@@ -10,6 +10,7 @@ groupManaging = function() {
     var manager = function() {};
 
     var groupsEl = $(".container-fluid");
+    var rowsSelector = ".row.panel";
 
     var glyphs = "\
     <div class='col-md-4 col-md-offset-1 button-area'>\
@@ -28,7 +29,7 @@ groupManaging = function() {
             success: function(json){
                 console.log(json);
                 test = json;
-                var currentSize = $(".row.panel").size();
+                var currentSize = $(rowsSelector).size();
                 json.forEach(function(group) {
                     ++currentSize;
                     var temp = group.dateOfCreating;
@@ -40,8 +41,29 @@ groupManaging = function() {
                                 <div class='col-sm-2 col-xs-offset-1 col-xs-5'><span>" + group.author + "</span></div>\
                                 <div class='col-sm-4 col-xs-offset-1 col-xs-6'><span>" + temp.substring(0, temp.length - 2)+ "</span></div>\
                             </div>" + glyphs + "\
-                        </div>")
-                })
+                        </div>\
+                        <div class='panel panel-primary description' style='display: none;'> \
+                            <div class='panel-heading'> \
+                                <h3 class='panel-title'>Description</h3> \
+                            </div> \
+                            <div class='panel-body'>" + group.description + "</div> \
+                        </div>"
+                    );
+                    $(rowsSelector).last().find(".btn-info").click(function() {
+                        var description = $(".description").last();
+                        var isOpen = false;
+
+                        return function() {
+                            if (isOpen) {
+                                description.slideUp("slow");
+                                isOpen = false;
+                            } else {
+                                description.slideDown("slow");
+                                isOpen = true;
+                            }
+                        };
+                    }())
+                });
             }
         });
     };
