@@ -82,3 +82,23 @@ div.row div button {
 .row.panel {
     margin-bottom: 4px;
 }
+
+.background-info {
+    background-color: #5bc0de;
+    position: absolute;
+    z-index: 2;
+    top: 2px;
+    left: 0;
+}
+
+.foreground-info {
+    background-color: #5bc0de;
+    z-index: 3;
+}
+
+button.btn-info div {
+    position: relative;
+    display: inline-block;
+    width: 15px;
+    height:15px;
+}

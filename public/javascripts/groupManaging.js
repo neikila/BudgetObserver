@@ -15,7 +15,12 @@ groupManaging = function() {
     var glyphs = "\
     <div class='col-md-4 col-md-offset-1 button-area'>\
         <div class='btn-group' role='group' aria-label='...'>\
-            <button type='button' class='btn btn-info'><span class='glyphicon glyphicon-info-sign'></span></button>\
+            <button type='button' class='btn btn-info'>\
+                <div>\
+                    <span class='glyphicon glyphicon-info-sign foreground-info'></span>\
+                    <span class='glyphicon glyphicon-chevron-up background-info'></span>\
+                </div>\
+            </button>\
             <button type='button' class='btn btn-default'><span class='glyphicon glyphicon-pencil'></span></button>\
             <button type='button' class='btn btn-danger'><span class='glyphicon glyphicon-remove'></span></button>\
         </div>\
@@ -49,7 +54,11 @@ groupManaging = function() {
                             <div class='panel-body'>" + group.description + "</div> \
                         </div>"
                     );
-                    $(rowsSelector).last().find(".btn-info").click(function() {
+
+                    // Description button
+                    var buttonInfo = $(rowsSelector).last().find(".btn-info");
+                    buttonInfo.click(function(buttonInfo) {
+                        var infoSpan = buttonInfo.find("div span.foreground-info");
                         var description = $(".description").last();
                         var isOpen = false;
 
@@ -61,8 +70,11 @@ groupManaging = function() {
                                 description.slideDown("slow");
                                 isOpen = true;
                             }
+                            infoSpan.animate({
+                                width: "toggle"
+                            });
                         };
-                    }())
+                    }(buttonInfo))
                 });
             }
         });
