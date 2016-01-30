@@ -64,6 +64,7 @@ var purchasesPage = function() {
                     $("<tr><th scope='row'>" + num + "</th><td>" + json.product + "</td><td>" + json.amount + "</td></tr>")
                         .insertBefore($(document).xpathEvaluate("//table[contains(@class, 'table')]/tbody/\*[1]"));
                 } else {
+                    $(".dropdown div").attr("data-toggle", "dropdown");
                     $(document).xpathEvaluate("//table[contains(@class, 'table')]/tbody")
                         .append("<tr><th scope='row'>" + num + "</th><td>" + json.product + "</td><td>" + json.amount + "</td></tr>");
                 }
@@ -115,6 +116,8 @@ var purchasesPage = function() {
                             "</tr>");
                         ++indexPurchase;
                     });
+                    if (json.purchases.length > 0)
+                        $(".dropdown div").attr("data-toggle", "dropdown");
                     page.getGroupPieDataFromServer(100);
                 }
             });
