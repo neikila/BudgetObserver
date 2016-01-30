@@ -56,3 +56,29 @@ html {
     margin: 0;
     text-align: left;
 }
+
+div.row div button {
+    width: 30%;
+    max-width: 100px;
+}
+
+.area div {
+    height: 34px;
+    display: table;
+}
+
+.area div span {
+    vertical-align: middle;
+    line-height: 20px;
+    display: table-cell;
+    height: 25px;
+}
+
+.button-area {
+    text-align:center;
+    height:100%;
+}
+
+.row.panel {
+    margin-bottom: 4px;
+}
