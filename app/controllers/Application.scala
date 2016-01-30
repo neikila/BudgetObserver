@@ -164,8 +164,9 @@ class Application extends Controller {
   implicit val groupWrites: Writes[Group] = (
     (__ \ "groupName").write[String] and
       (__ \ "author").write[String] and
+      (__ \ "description").write[String] and
       (__ \ "dateOfCreating").write[String]
-    )(unlift((group: Group) => Some(group.groupName, group.author, group.dateOfCreation.toString)))
+    )(unlift((group: Group) => Some(group.groupName, group.author, group.description, group.dateOfCreation.toString)))
 }
 
 object Application {

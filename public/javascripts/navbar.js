@@ -108,6 +108,12 @@ var userConstructor = function() {
             navbarController.update();
     };
 
+    user.addGroup = function(groupName) {
+        user.otherGroups.push(groupName);
+        user.save();
+        navbarController.reloadDropDown();
+    };
+
     return user;
 };
 
