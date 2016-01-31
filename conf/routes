@@ -18,6 +18,7 @@ GET     /userData                   controllers.AuthController.getUserData
 GET     /groupManaging              controllers.Application.getGroupManaging
 GET     /usersGroups                controllers.Application.getAllGroups
 GET     /receiver.html              controllers.Assets.at(path="/public/html", file="_receiver.html")
+GET     /backbone                   controllers.Assets.at(path="/public/html", file="backboneTest.html")
 
 POST    /loginJSON                  controllers.AuthController.loginJSON
 POST    /signup                     controllers.AuthController.signup
