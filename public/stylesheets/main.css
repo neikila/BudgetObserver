@@ -84,7 +84,7 @@ div.row div button {
 }
 
 .background-info {
-    background-color: #5bc0de;
+    /*background-color: #5bc0de;*/
     position: absolute;
     z-index: 2;
     top: 2px;
@@ -92,13 +92,13 @@ div.row div button {
 }
 
 .foreground-info {
-    background-color: #5bc0de;
+    /*background-color: #5bc0de;*/
     z-index: 3;
 }
 
 button.btn-info div {
     position: relative;
     display: inline-block;
-    width: 15px;
-    height:15px;
+    width: 19px;
+    height:19px;
 }

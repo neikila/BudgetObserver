@@ -14,11 +14,11 @@ groupManaging = function() {
 
     var glyphs = "\
     <div class='col-md-4 col-md-offset-1 button-area'>\
-        <div class='btn-group' role='group' aria-label='...'>\
+        <div class='btn-group-lg' role='group' aria-label='...'>\
             <button type='button' class='btn btn-info'>\
                 <div>\
                     <span class='glyphicon glyphicon-info-sign foreground-info'></span>\
-                    <span class='glyphicon glyphicon-chevron-up background-info'></span>\
+                    <span class='glyphicon glyphicon-chevron-up background-info'  style='display: none;'></span>\
                 </div>\
             </button>\
             <button type='button' class='btn btn-default'><span class='glyphicon glyphicon-pencil'></span></button>\
@@ -59,6 +59,7 @@ groupManaging = function() {
                     var buttonInfo = $(rowsSelector).last().find(".btn-info");
                     buttonInfo.click(function(buttonInfo) {
                         var infoSpan = buttonInfo.find("div span.foreground-info");
+                        var backgroundSpan = buttonInfo.find("div span.background-info");
                         var description = $(".description").last();
                         var isOpen = false;
 
@@ -73,6 +74,9 @@ groupManaging = function() {
                             infoSpan.animate({
                                 width: "toggle"
                             });
+                            backgroundSpan.animate({
+                                width: "toggle"
+                            })
                         };
                     }(buttonInfo))
                 });
