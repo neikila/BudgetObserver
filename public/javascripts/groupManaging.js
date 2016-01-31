@@ -41,10 +41,9 @@ groupManaging = function() {
                     groupsEl.append("\
                         <div class='row panel'>\
                             <div class='col-md-7 area'>\
-                                <div class='col-sm-1 col-xs-1'><span>" + currentSize + "</span></div>\
-                                <div class='col-sm-3 col-xs-6'><span>" + group.groupName + "</span></div>\
-                                <div class='col-sm-2 col-xs-offset-1 col-xs-5'><span>" + group.author + "</span></div>\
-                                <div class='col-sm-4 col-xs-offset-1 col-xs-6'><span>" + temp.substring(0, temp.length - 2)+ "</span></div>\
+                                <div class='col-sm-3 col-xs-7'><span>" + group.groupName + "</span></div>\
+                                <div class='col-sm-3 col-xs-7'><span>" + group.author + "</span></div>\
+                                <div class='col-sm-6 col-xs-7'><span>" + temp.substring(0, temp.length - 2)+ "</span></div>\
                             </div>" + glyphs + "\
                         </div>\
                         <div class='panel panel-primary description' style='display: none;'> \

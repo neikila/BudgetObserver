@@ -63,8 +63,9 @@ div.row div button {
 }
 
 .area div {
-    height: 34px;
+    height: 46px;
     display: table;
+    text-align: center;
 }
 
 .area div span {
@@ -80,6 +81,8 @@ div.row div button {
 }
 
 .row.panel {
+    border-width: 2px;
+    border-radius: 6px;
     margin-bottom: 4px;
 }
 
