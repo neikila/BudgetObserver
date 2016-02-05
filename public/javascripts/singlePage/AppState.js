@@ -6,12 +6,7 @@ define(["backbone"], function(Backbone) {
         defaults: {
             state: "start",
             username: "",
-            isAuth: false,
-            user: "asd",
-            email: "test",
-            name: "testName",
-            defaultGroup: "first",
-            groups: ["first", "second"]
+            isAuth: false
         }
     });
 });

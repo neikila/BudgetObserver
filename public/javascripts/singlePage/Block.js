@@ -46,7 +46,7 @@ define(["jquery", "backbone", "underscore", "userInfo"], function($, Backbone, _
                     this.userInfo.update(this.$(".userInfo"));
                     console.log("Now it's all OK")
                 }
-                this.user.trigger("change");
+                this.userInfo.render();
             }
             return this;
         }
