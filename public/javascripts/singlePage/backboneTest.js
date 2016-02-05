@@ -11,13 +11,14 @@ requirejs.config({
         family: 'Family',
         userInfo: 'UserInfo',
         block: 'Block',
-        jquery: '../utils/jquery-2.2.0',
+        navbarRight: "NavbarRight",
+        jquery: '../utils/jquery-2.2.0.min',
         backbone: '../utils/backbone',
         underscore: '../utils/underscore',
-        bp: '../../bootstrap/javascripts/bootstrap.min'
+        bs: '../../bootstrap/javascripts/bootstrap.min'
     },
     shim: {
-        'bp': {
+        'bs': {
             deps: ['jquery']
         },
         'underscore': {
@@ -30,8 +31,8 @@ requirejs.config({
     }
 });
 
-require(['jquery', "appState", "user", "controller", "family", "userInfo", "block", "backbone", "bp"],
-    function ($, AppState, User, Controller, Family, UserInfo, Block, Backbone) {
+require(['jquery', "appState", "user", "controller", "family", "userInfo", "block", "navbarRight","backbone", "bs"],
+    function ($, AppState, User, Controller, Family, UserInfo, Block, NavbarRight, Backbone) {
 
         var appState = new AppState();
 
@@ -48,6 +49,8 @@ require(['jquery', "appState", "user", "controller", "family", "userInfo", "bloc
 
         var block = new Block({ model: appState });
         block.init(user, MyFamily);
+
+        var navbarRight = new NavbarRight({ model: appState });
 
         appState.trigger("change");
 

@@ -3,7 +3,7 @@
  */
 define(["jquery", "backbone", "underscore", "userInfo"], function($, Backbone, _, UserInfo) {
     return Backbone.View.extend({
-        el: $("#block"), // DOM элемент widget'а
+        el: $("div.content-bb"),
 
         templates: { // Шаблоны на разное состояние
             "start": _.template($('#start').html()),
