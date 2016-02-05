@@ -22,12 +22,9 @@ define(["backbone"], function(Backbone) {
         },
 
         render: function () {
-            console.log(this.model.get("isAuth"));
             if (this.model.get("isAuth")) {
-                console.log("auth");
                 $(this.el).html(this.templates["auth"](this.model.toJSON()));
             } else {
-                console.log("not auth");
                 $(this.el).html(this.templates["notAuth"](this.model.toJSON()));
             }
             return this;

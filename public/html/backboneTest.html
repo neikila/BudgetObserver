@@ -47,8 +47,10 @@
             </div>
         </nav>
     </div>
-    <div class="container content-bb block">
-    </div>
+
+    <div class="container todo"></div>
+
+    <div class="container content-bb block"></div>
 
     <script type="text/template" id="start">
         <div class="start">
@@ -96,6 +98,24 @@
     <script type="text/template" class="navbar-right-html auth">
         <p class="navbar-text">Signed in as <a href="#" class="navbar-link"><%= user %></a></p>
         <li><a href="/logout"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+    </script>
+
+    <script type="text/template" class="todo">
+        <h1>Для тех кто пришел посмотреть:</h1>
+        В правом верхнем углу логинимся или регаемся =)
+        Ну или так: <a href="/signup">Клик сюды ;-)</a>
+        <div style="font-size: xx-small">И я украду все ваши куки, хе-хе... </div> Кликай, Кликай, нечего тут разглядывать
+
+        <h1>TODO list</h1>
+
+        <ul id="list">
+            <li>Создание групп.</li>
+            <li>Случайные цвета.</li>
+            <li>Настройки аккаунта.</li>
+            <li>Авторизация через ВК//google.</li>
+            <li>Ограничение размера отобржаемой части списка покупок.</li>
+            <li>Index с пояснением.</li>
+        </ul>
     </script>
 
     <script data-main="/assets/javascripts/singlePage/backboneTest" src="/assets/javascripts/utils/require.js"></script>

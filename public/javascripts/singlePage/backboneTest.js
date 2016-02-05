@@ -10,6 +10,7 @@ requirejs.config({
         userNameModel: 'UserNameModel',
         family: 'Family',
         userInfo: 'UserInfo',
+        todo: 'Todo',
         block: 'Block',
         navbarRight: "NavbarRight",
         jquery: '../utils/jquery-2.2.0.min',
@@ -31,12 +32,12 @@ requirejs.config({
     }
 });
 
-require(['jquery', "appState", "user", "controller", "family", "userInfo", "block", "navbarRight","backbone", "bs"],
-    function ($, AppState, User, Controller, Family, UserInfo, Block, NavbarRight, Backbone) {
-
-        var appState = new AppState();
+require(['jquery', "appState", "user", "controller", "family", "userInfo", "block", "todo", "navbarRight","backbone", "bs"],
+    function ($, AppState, User, Controller, Family, UserInfo, Block, Todo, NavbarRight, Backbone) {
 
         var user = new User();
+
+        var appState = new AppState();
 
         var controller = new Controller(); // Создаём контроллер
         controller.initializeWithAppState(appState);
@@ -51,6 +52,8 @@ require(['jquery', "appState", "user", "controller", "family", "userInfo", "bloc
         block.init(user, MyFamily);
 
         var navbarRight = new NavbarRight({ model: appState });
+
+        var todo = new Todo( {model: appState });
 
         appState.trigger("change");
 
