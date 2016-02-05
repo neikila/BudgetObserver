@@ -36,6 +36,7 @@ require(['jquery', "appState", "user", "controller", "family", "userInfo", "bloc
     function ($, AppState, User, Controller, Family, UserInfo, Block, Todo, NavbarRight, Backbone) {
 
         var user = new User();
+        user.getFromServer();
 
         var appState = new AppState();
 
@@ -51,7 +52,8 @@ require(['jquery', "appState", "user", "controller", "family", "userInfo", "bloc
         var block = new Block({ model: appState });
         block.init(user, MyFamily);
 
-        var navbarRight = new NavbarRight({ model: appState });
+        var navbarRight = new NavbarRight({ model: user });
+        navbarRight.render();
 
         var todo = new Todo( {model: appState });
 

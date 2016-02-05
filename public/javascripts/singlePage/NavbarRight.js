@@ -15,10 +15,7 @@ define(["backbone"], function(Backbone) {
         },
 
         initialize: function () { // Подписка на событие модели
-            this.listenTo(this.model, 'change', this.render);
-        },
-
-        init: function (root) {
+            this.listenTo(this.model, 'change:isAuth', this.render);
         },
 
         render: function () {

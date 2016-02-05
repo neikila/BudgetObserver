@@ -5,8 +5,7 @@ define(["backbone"], function(Backbone) {
     return Backbone.Model.extend({
         defaults: {
             state: "start",
-            username: "",
-            isAuth: false
+            username: ""
         }
     });
 });
