@@ -21,18 +21,26 @@ define(["backbone"], function (Backbone) {
                 success: function(json){
                     console.log(json);
                     if (json.isAuth) {
-                        console.log(self);
-                        self.set("login", json.user.login);
-                        self.set("email",  json.user.email);
-                        self.set("name", json.user.name);
-                        self.set("surname", json.user.surname);
-                        self.set("defaultGroup", json.defaultGroup);
-                        self.set("otherGroups", json.otherGroups);
+                        self.authWithJson(json);
                         self.set("isAuth", true);
                         appState.set("groupToShow", self.get("defaultGroup"))
                     }
                 }
             });
+        },
+
+        authWithJson: function(json) {
+            this.set("login", json.user.login);
+            this.set("email",  json.user.email);
+            this.set("name", json.user.name);
+            this.set("surname", json.user.surname);
+            this.set("defaultGroup", json.defaultGroup);
+            this.set("otherGroups", json.otherGroups);
+            this.set("isAuth", true)
+        },
+
+        deauth: function() {
+            this.set("isAuth", false);
         }
     });
 });

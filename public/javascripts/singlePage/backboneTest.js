@@ -9,11 +9,11 @@ requirejs.config({
         controller: 'Controller',
         userNameModel: 'UserNameModel',
         family: 'Family',
-        userInfo: 'UserInfo',
-        todo: 'Todo',
-        block: 'Block',
+        container: 'Container',
+        error: 'Error',
         navbarRight: "NavbarRight",
         navbarLeft: "NavbarLeft",
+        utils: "Utils",
         jquery: '../utils/jquery-2.2.0.min',
         backbone: '../utils/backbone',
         underscore: '../utils/underscore',
@@ -33,8 +33,8 @@ requirejs.config({
     }
 });
 
-require(['jquery', "appState", "user", "controller", "family", "userInfo", "todo", "navbarRight", "navbarLeft", "backbone", "bs"],
-    function ($, AppState, User, Controller, Family, UserInfo, Todo, NavbarRight, NavbarLeft, Backbone) {
+require(['jquery', "appState", "user", "controller", "family", "container", "navbarRight", "navbarLeft", "backbone", "bs"],
+    function ($, AppState, User, Controller, Family, Container, NavbarRight, NavbarLeft, Backbone) {
 
         var user = new User();
 
@@ -51,22 +51,23 @@ require(['jquery', "appState", "user", "controller", "family", "userInfo", "todo
         ]);
 
         var navbarRight = new NavbarRight({ model: user });
+        navbarRight.init(appState);
         navbarRight.render();
         var navbarLeft = new NavbarLeft({ model: user });
         navbarLeft.init(appState);
         navbarLeft.render();
 
-        var todo = new Todo( {model: appState });
-
-        appState.trigger("change");
+        var container = new Container( {model: appState });
+        container.init(user);
+        container.render();
 
         appState.bind("change:state", function () { // подписка на смену состояния для контроллера
-            var state = this.get("state");
+            var state = appState.get("state");
             if (state == "start")
-                controller.navigate("!/", false); // false потому, что нам не надо
+                controller.navigate("!/", true); // false потому, что нам не надо
                                                   // вызывать обработчик у Router
             else
-                controller.navigate("!/" + state, false);
+                controller.navigate("!/" + state, true);
         });
 
         Backbone.history.start();  // Запускаем HTML5 History push
