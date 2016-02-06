@@ -7,8 +7,6 @@ requirejs.config({
         appState: 'AppState',
         user: 'User',
         controller: 'Controller',
-        userNameModel: 'UserNameModel',
-        family: 'Family',
         container: 'Container',
         error: 'Error',
         navbarRight: "NavbarRight",
@@ -33,8 +31,8 @@ requirejs.config({
     }
 });
 
-require(['jquery', "appState", "user", "controller", "family", "container", "navbarRight", "navbarLeft", "backbone", "bs"],
-    function ($, AppState, User, Controller, Family, Container, NavbarRight, NavbarLeft, Backbone) {
+require(['jquery', "appState", "user", "controller", "container", "navbarRight", "navbarLeft", "backbone", "bs"],
+    function ($, AppState, User, Controller, Container, NavbarRight, NavbarLeft, Backbone) {
 
         var user = new User();
 
@@ -44,11 +42,11 @@ require(['jquery', "appState", "user", "controller", "family", "container", "nav
         var controller = new Controller(); // Создаём контроллер
         controller.initializeWithAppState(appState);
 
-        var MyFamily = new Family([ // Моя семья
-            {Name: "Саша" },
-            {Name: "Юля" },
-            {Name: "Елизар" }
-        ]);
+        //var MyFamily = new Family([ // Моя семья
+        //    {Name: "Саша" },
+        //    {Name: "Юля" },
+        //    {Name: "Елизар" }
+        //]);
 
         var navbarRight = new NavbarRight({ model: user });
         navbarRight.init(appState);
