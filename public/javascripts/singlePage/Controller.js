@@ -6,7 +6,8 @@ define(["backbone"], function(Backbone) {
         routes: {
             "": "start", // Пустой hash-тэг
             "!/": "start", // Начальная страница
-            "!/login": "login", // Показ группы
+            "!/login": "login",
+            "!/signup": "signup",
             "!/purchase": "purchases" // Показ группы
         },
 
@@ -20,6 +21,10 @@ define(["backbone"], function(Backbone) {
 
         login: function() {
             this.appState.set({state: "login"})
+        },
+
+        signup: function() {
+            this.appState.set({state: "signup"})
         },
 
         purchases: function() {

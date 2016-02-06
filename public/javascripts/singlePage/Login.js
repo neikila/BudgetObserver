@@ -21,8 +21,8 @@ define(["backbone", "error", "errorView", "utils"], function(Backbone, Error, Er
             var errorEl = $("div.alert");
             errorEl.slideUp("slow");
             Utils.postJSON("/loginJSON", {
-                "login": $("#login").val(),
-                "password": $("#password").val()
+                "login": $("#login_login").val(),
+                "password": $("#login_password").val()
             }, function(json){
                 console.log(json);
                 if ('error' in json) {
@@ -48,7 +48,7 @@ define(["backbone", "error", "errorView", "utils"], function(Backbone, Error, Er
             var state = this.model.get("state");
             $(this.el).html(this.templates[state]());
 
-            new ErrorView({ model: this.loginError, el: $("form div.alert") }).render()
+            new ErrorView({ model: this.loginError, el: this.$("form div.alert") }).render()
         }
     })
 });

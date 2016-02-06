@@ -1,13 +1,14 @@
 /**
  * Created by neikila on 05.02.16.
  */
-define(["backbone", "login"], function(Backbone, Login) {
+define(["backbone", "login", "signup"], function(Backbone, Login, Signup) {
     return Backbone.View.extend({
         el: $(".container.content-bb"),
 
         templates: {
             "start": _.template($("script.container__todo").html()),
-            "login": _.template("<div class='container__login'></div>")
+            "login": _.template("<div class='container__login'></div>"),
+            "signup": _.template("<div class='container__signup'></div>")
         },
 
         init: function(user) {
@@ -18,7 +19,8 @@ define(["backbone", "login"], function(Backbone, Login) {
             this.listenTo(this.model, 'change:state', this.render);
             this.renderView = {
                 "start": this.nothing,
-                "login": this.login
+                "login": this.login,
+                "signup": this.signup
             }
         },
 
@@ -29,7 +31,7 @@ define(["backbone", "login"], function(Backbone, Login) {
         },
 
         signup: function(self) {
-
+            new Signup({ model: self.model, el: self.$("div.container__signup") }).init(self.user).render();
         },
 
         render: function() {

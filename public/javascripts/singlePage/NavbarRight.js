@@ -31,6 +31,12 @@ define(["backbone", "utils"], function(Backbone, Utils) {
                 else {
                     $(document).xpathEvaluate("//a[contains(text(),'Login')]/..").removeClass("active");
                 }
+                if (this.appState.get("state") == "signup")
+                    $(document).xpathEvaluate("//a[contains(text(),'Signup')]/..").addClass("active");
+                else {
+                    $(document).xpathEvaluate("//a[contains(text(),'Signup')]/..").removeClass("active");
+                }
+
             })
         },
 

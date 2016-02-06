@@ -106,14 +106,40 @@
             <h2 class="form-signin-heading">Please sign in</h2>
 
             <label for="login" class="sr-only">User login</label>
-            <input type="text" id="login" name="login" class="form-control" placeholder="Login" required="" autofocus="" autocomplete="off">
+            <input type="text" id="login_login" name="login" class="form-control" placeholder="Login" required="" autofocus="" autocomplete="off">
 
             <label for="password" class="sr-only">Password</label>
-            <input type="password" id="password" name="password" class="form-control margin-bottom" placeholder="Password" required="" autocomplete="off">
+            <input type="password" id="login_password" name="password" class="form-control margin-bottom" placeholder="Password" required="" autocomplete="off">
 
             <div class="alert alert-danger" role="alert" style="display: none;"></div>
 
             <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+        </form>
+    </script>
+    <script type="text/template" class="container__signup">
+        <form class="form-signin" action="#!/signup">
+            <h2 class="form-signin-heading">Welcome to registration page!</h2>
+
+            <label for="login" class="sr-only">User login</label>
+            <input type="text" id="login" name="login" class="form-control" placeholder="Login" required="" autofocus="" autocomplete="off">
+
+            <label for="password" class="sr-only">Password</label>
+            <input type="password" id="password" name="password" class="form-control" placeholder="Password" required="" autocomplete="off">
+            <label for="password" class="sr-only">Password</label>
+            <input type="password" id="password_repeat" name="password_repeat" class="form-control margin-bottom" placeholder="Password repeat" required="" autocomplete="off">
+
+            <label for="name" class="sr-only">Name</label>
+            <input type="text" id="name" name="name" class="form-control" placeholder="Name" required="" autocomplete="off">
+            <label for="surname" class="sr-only">Surname</label>
+            <input type="text" id="surname" name="surname" class="form-control" placeholder="Surname" required="" autocomplete="off">
+
+            <label for="email" class="sr-only">Email</label>
+            <input type="email" id="email" name="email" class="form-control margin-bottom" placeholder="email@mail.ru" required="" autocomplete="off">
+
+            <div class="alert alert-danger" role="alert" style="display: none;">
+            </div>
+
+            <button id="signup_but" class="btn btn-lg btn-primary btn-block margin-bottom" type="submit">Sign up</button>
         </form>
     </script>
 

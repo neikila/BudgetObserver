@@ -11,6 +11,7 @@ requirejs.config({
         error: 'Error',
         errorView: 'ErrorView',
         login: 'Login',
+        signup: 'Signup',
         navbarRight: "NavbarRight",
         navbarLeft: "NavbarLeft",
         utils: "Utils",
