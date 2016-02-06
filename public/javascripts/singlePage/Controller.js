@@ -6,9 +6,10 @@ define(["backbone"], function(Backbone) {
         routes: {
             "": "start", // Пустой hash-тэг
             "!/": "start", // Начальная страница
+            "!/login": "login", // Показ группы
+            "!/purchase": "purchases", // Показ группы
             "!/success": "success", // Блок удачи
-            "!/error": "error", // Блок ошибки
-            "!/userInfo": "userInfo" // Блок ошибки
+            "!/error": "error" // Блок ошибки
         },
 
         initializeWithAppState: function(appStateExternal) {
@@ -19,16 +20,20 @@ define(["backbone"], function(Backbone) {
             this.appState.set({state: "start"});
         },
 
+        login: function() {
+            this.appState.set({state: "login"})
+        },
+
+        purchases: function() {
+            this.appState.set({state: "purchases"})
+        },
+
         success: function () {
             this.appState.set({state: "success"});
         },
 
         error: function () {
             this.appState.set({state: "error"});
-        },
-
-        userInfo: function () {
-            this.appState.set({state: "userInfo"});
         }
     });
 });

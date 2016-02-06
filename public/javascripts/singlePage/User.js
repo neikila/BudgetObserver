@@ -13,7 +13,7 @@ define(["backbone"], function (Backbone) {
             otherGroups: []
         },
 
-        getFromServer: function() {
+        getFromServer: function(appState) {
             var self = this;
             $.ajax({
                 type: "GET",
@@ -29,6 +29,7 @@ define(["backbone"], function (Backbone) {
                         self.set("defaultGroup", json.defaultGroup);
                         self.set("otherGroups", json.otherGroups);
                         self.set("isAuth", true);
+                        appState.set("groupToShow", self.get("defaultGroup"))
                     }
                 }
             });

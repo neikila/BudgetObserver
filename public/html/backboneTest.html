@@ -34,7 +34,7 @@
                                aria-haspopup="true" aria-expanded="false">
                                 <span class="caret"></span>
                             </a>
-                            <ul class="dropdown-menu">
+                            <ul class="dropdown-menu navbar__groups">
                                 <li><a href="#">Example budget</a></li>
                             </ul>
                         </li>
@@ -116,6 +116,21 @@
             <li>Ограничение размера отобржаемой части списка покупок.</li>
             <li>Index с пояснением.</li>
         </ul>
+    </script>
+
+    <script type="text/template" class="navbar__groups not-auth">
+        <li><a href="#">Example budget</a></li>
+    </script>
+
+    <script type="text/template" class="navbar__groups auth">
+        <li><a><%- defaultGroup %></a></li>
+
+        <li role="separator" class="divider"></li>
+        <li class="dropdown-header">Other budgets</li>
+
+        <% _.each(otherGroups, function(group){ %>
+            <li><a><%- group %></a></li>
+        <% }); %>
     </script>
 
     <script data-main="/assets/javascripts/singlePage/backboneTest" src="/assets/javascripts/utils/require.js"></script>

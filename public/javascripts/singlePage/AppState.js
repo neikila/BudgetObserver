@@ -5,7 +5,8 @@ define(["backbone"], function(Backbone) {
     return Backbone.Model.extend({
         defaults: {
             state: "start",
-            username: ""
+            username: "",
+            groupToShow: ""
         }
     });
 });

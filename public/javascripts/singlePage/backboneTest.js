@@ -13,6 +13,7 @@ requirejs.config({
         todo: 'Todo',
         block: 'Block',
         navbarRight: "NavbarRight",
+        navbarLeft: "NavbarLeft",
         jquery: '../utils/jquery-2.2.0.min',
         backbone: '../utils/backbone',
         underscore: '../utils/underscore',
@@ -32,13 +33,13 @@ requirejs.config({
     }
 });
 
-require(['jquery', "appState", "user", "controller", "family", "userInfo", "block", "todo", "navbarRight","backbone", "bs"],
-    function ($, AppState, User, Controller, Family, UserInfo, Block, Todo, NavbarRight, Backbone) {
+require(['jquery', "appState", "user", "controller", "family", "userInfo", "todo", "navbarRight", "navbarLeft", "backbone", "bs"],
+    function ($, AppState, User, Controller, Family, UserInfo, Todo, NavbarRight, NavbarLeft, Backbone) {
 
         var user = new User();
-        user.getFromServer();
 
         var appState = new AppState();
+        user.getFromServer(appState);
 
         var controller = new Controller(); // Создаём контроллер
         controller.initializeWithAppState(appState);
@@ -49,11 +50,11 @@ require(['jquery', "appState", "user", "controller", "family", "userInfo", "bloc
             {Name: "Елизар" }
         ]);
 
-        var block = new Block({ model: appState });
-        block.init(user, MyFamily);
-
         var navbarRight = new NavbarRight({ model: user });
         navbarRight.render();
+        var navbarLeft = new NavbarLeft({ model: user });
+        navbarLeft.init(appState);
+        navbarLeft.render();
 
         var todo = new Todo( {model: appState });
 
