@@ -28,6 +28,9 @@ define(["backbone", "utils"], function(Backbone, Utils) {
             this.listenTo(this.appState, 'change:state', function() {
                 if (this.appState.get("state") == "login")
                     $(document).xpathEvaluate("//a[contains(text(),'Login')]/..").addClass("active");
+                else {
+                    $(document).xpathEvaluate("//a[contains(text(),'Login')]/..").removeClass("active");
+                }
             })
         },
 

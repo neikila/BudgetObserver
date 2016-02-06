@@ -9,6 +9,8 @@ requirejs.config({
         controller: 'Controller',
         container: 'Container',
         error: 'Error',
+        errorView: 'ErrorView',
+        login: 'Login',
         navbarRight: "NavbarRight",
         navbarLeft: "NavbarLeft",
         utils: "Utils",
