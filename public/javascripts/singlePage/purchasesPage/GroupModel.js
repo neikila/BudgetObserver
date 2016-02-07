@@ -50,8 +50,6 @@ define(["backbone", "purchasesCollection"], function (Backbone, PurchasesCollect
                     "groupName": self.get("groupName")
                 },
                 success: function(pieData){
-                    console.log("pieData");
-                    console.log(pieData);
                     self.get("purchasesGrouped").reset(pieData);
                     window.pieData = self.get("purchasesGrouped");
                 }

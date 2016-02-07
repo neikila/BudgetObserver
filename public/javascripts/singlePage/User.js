@@ -19,7 +19,6 @@ define(["backbone"], function (Backbone) {
                 type: "GET",
                 url: "/userData",
                 success: function(json){
-                    console.log(json);
                     if (json.isAuth) {
                         self.authWithJson(json);
                         self.set("isAuth", true);

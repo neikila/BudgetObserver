@@ -24,7 +24,6 @@ define(["backbone", "error", "errorView", "utils"], function(Backbone, Error, Er
                 "login": $("#login_login").val(),
                 "password": $("#login_password").val()
             }, function(json){
-                console.log(json);
                 if ('error' in json) {
                     if (json.code == 2) {
                         self.model.set("state", "start");

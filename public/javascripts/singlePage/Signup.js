@@ -28,7 +28,6 @@ define(["backbone", "error", "errorView", "utils"], function(Backbone, Error, Er
                 "surname": $("#surname").val(),
                 "email": $("#email").val()
             }, function(json){
-                console.log(json);
                 if ('error' in json) {
                     errorEl.slideUp("fast", function() {
                         self.setErrorMessage(json.code);

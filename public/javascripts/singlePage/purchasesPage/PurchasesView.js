@@ -18,7 +18,6 @@ define(["backbone", "utils", "chart"], function(Backbone, Utils, Chart) {
 
         savePurchase: function() {
             var self = this;
-            console.log("Save purchase func");
             Utils.postJSON("/saveJSON", {
                 "product": $("#product").val(),
                 "amount": Number($("#amount").val()),
@@ -89,7 +88,6 @@ define(["backbone", "utils", "chart"], function(Backbone, Utils, Chart) {
             });
 
             if (this.model.get("purchasesGrouped").length > 0) {
-                console.log("Hey!");
                 this.$(".dropdown div").attr("data-toggle", "dropdown");
                 this.pieResize();
                 this.drawPieChart(this.model.get("purchasesGrouped").toJSON(), 100);

@@ -44,7 +44,6 @@ define(["backbone", "login", "signup", "purchasesView", "groupModel"],
 
         render: function() {
             var state = this.model.get("state");
-            console.log("state: " + state);
             $(this.el).html(this.templates[state]());
             this.renderView[state](this);
         }
