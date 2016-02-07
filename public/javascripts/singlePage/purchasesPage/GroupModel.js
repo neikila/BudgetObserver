@@ -51,7 +51,6 @@ define(["backbone", "purchasesCollection"], function (Backbone, PurchasesCollect
                 },
                 success: function(pieData){
                     self.get("purchasesGrouped").reset(pieData);
-                    window.pieData = self.get("purchasesGrouped");
                 }
             });
         }

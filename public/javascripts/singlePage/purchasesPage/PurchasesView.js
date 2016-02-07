@@ -1,7 +1,7 @@
 /**
-    * Created by neikila.
-    */
-define(["backbone", "utils", "chart"], function(Backbone, Utils, Chart) {
+ * Created by neikila.
+ */
+define(["backbone", "utils", "chart", "pieChartView"], function(Backbone, Utils, Chart, PieChartView) {
     return Backbone.View.extend({
         templates: {
             "purchases": _.template($("script.container__purchases").html())
@@ -30,29 +30,9 @@ define(["backbone", "utils", "chart"], function(Backbone, Utils, Chart) {
             return false;
         },
 
-        pieResize: function() {
-            var pieholder = this.$("div.pieholder");
-            var pieLength = pieholder.width();
-            if (pieLength > 400) {
-                pieLength = 400
-            }
-            pieholder.empty().append("<canvas id='graph'></canvas>");
-            this.pieChart = null;
-            var pie = this.$("canvas");
-            pie.attr("width", pieLength);
-            pie.attr("height", pieLength);
-        },
-
         initialize: function () {
-            var self = this;
-            $(window).on("resize", function() {
-                self.pieResize();
-                self.drawPieChart(self.model.get("purchasesGrouped").toJSON(), 0);
-            });
-            this.pieChart = null;
             this.listenTo(this.model.get("purchases"), "reset", this.render);
             this.listenTo(this.model.get("purchases"), "add", this.render);
-            this.listenTo(this.model.get("purchasesGrouped"), "reset", this.render);
             this.model.getFromServer();
             this.model.getGroupPieDataFromServer();
         },
@@ -89,9 +69,9 @@ define(["backbone", "utils", "chart"], function(Backbone, Utils, Chart) {
 
             if (this.model.get("purchasesGrouped").length > 0) {
                 this.$(".dropdown div").attr("data-toggle", "dropdown");
-                this.pieResize();
-                this.drawPieChart(this.model.get("purchasesGrouped").toJSON(), 100);
             }
+
+            new PieChartView({ el: this.$("div.pieholder"), model: this.model.get("purchasesGrouped") }).render();
 
             //new ErrorView({ model: this.loginError, el: this.$("form div.alert") }).render()
         }

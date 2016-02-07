@@ -18,6 +18,7 @@ requirejs.config({
         purchaseModel: "purchasesPage/PurchaseModel",
         purchasesCollection: "purchasesPage/PurchasesCollection",
         purchasesView: "purchasesPage/PurchasesView",
+        pieChartView: "purchasesPage/PieChartView",
         utils: "Utils",
         jquery: '../utils/jquery-2.2.0.min',
         chart: '../utils/Chart',
