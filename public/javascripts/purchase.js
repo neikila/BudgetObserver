@@ -49,8 +49,9 @@ var purchasesPage = function() {
         };
 
     page.setListeners = function () {
-        $('#product').focusout(function(){
-            $("div.dropdown-backdrop").click();
+        $('div.dropdown').keydown(function(e) {
+            if (e.keyCode == 9)
+                $("div.dropdown-backdrop").click();
         });
 
         $("#savePur").click(function(){
@@ -105,12 +106,13 @@ var purchasesPage = function() {
                 success: function(json){
                     page.setGroupName(json.groupName);
                     var tableEl = $("tbody");
-                    var indexPurchase = 1;
+                    var indexPurchase = 0;
                     console.log("json: " + json);
                     tableEl.empty();
+                    var amount = json.purchases.length;
                     json.purchases.reverse().forEach(function(purchase) {
                         tableEl.append("<tr>" +
-                            "<th scope='row'>" + indexPurchase + "</th>" +
+                            "<th scope='row'>" + (amount - indexPurchase) + "</th>" +
                             "<td>" + purchase.productName + " </td>" +
                             "<td>" + purchase.amount + "</td>" +
                             "</tr>");
