@@ -1,0 +1,101 @@
+/**
+    * Created by neikila.
+    */
+define(["backbone", "utils", "chart"], function(Backbone, Utils, Chart) {
+    return Backbone.View.extend({
+        templates: {
+            "purchases": _.template($("script.container__purchases").html())
+        },
+
+        init: function(user) {
+            this.user = user;
+            return this;
+        },
+
+        events: {
+            "click #savePur": "savePurchase"
+        },
+
+        savePurchase: function() {
+            var self = this;
+            console.log("Save purchase func");
+            Utils.postJSON("/saveJSON", {
+                "product": $("#product").val(),
+                "amount": Number($("#amount").val()),
+                "groupName": self.model.get("groupName")
+            }, function(json){
+                json["login"] = self.user.get("login");
+                self.model.get("purchases").add(json);
+                self.model.getGroupPieDataFromServer();
+            });
+            return false;
+        },
+
+        pieResize: function() {
+            var pieholder = this.$("div.pieholder");
+            var pieLength = pieholder.width();
+            if (pieLength > 400) {
+                pieLength = 400
+            }
+            pieholder.empty().append("<canvas id='graph'></canvas>");
+            this.pieChart = null;
+            var pie = this.$("canvas");
+            pie.attr("width", pieLength);
+            pie.attr("height", pieLength);
+        },
+
+        initialize: function () {
+            var self = this;
+            $(window).on("resize", function() {
+                self.pieResize();
+                self.drawPieChart(self.model.get("purchasesGrouped").toJSON(), 0);
+            });
+            this.pieChart = null;
+            this.listenTo(this.model.get("purchases"), "reset", this.render);
+            this.listenTo(this.model.get("purchases"), "add", this.render);
+            this.listenTo(this.model.get("purchasesGrouped"), "reset", this.render);
+            this.model.getFromServer();
+            this.model.getGroupPieDataFromServer();
+        },
+
+        drawPieChart: function(pieData, num) {
+            // TODO refactor.
+            var graph = document.getElementById('graph').getContext('2d');
+            var pieOptions = {
+                animationSteps: num,
+                animationEasing: 'easeInOutQuart'
+            };
+            if (this.pieChart != null) {
+                this.pieChart.destroy();
+            }
+            this.pieChart = new Chart(graph).Pie(pieData, pieOptions);
+        },
+
+        render: function() {
+            $(this.el).html(this.templates["purchases"]({
+                "purchases": this.model.get("purchases").toJSON(),
+                "purchasesGrouped": this.model.get("purchasesGrouped").toJSON(),
+                "groupName": this.model.get("groupName")
+            }));
+
+            $(document).xpathEvaluate("//ul[@aria-labelledby='product']/li").click(function() {
+                $("#product").val($(this).children().text())
+            });
+
+            // Закрытие списка при нажатии на таб
+            this.$('div.dropdown').keydown(function(e) {
+                if (e.keyCode == 9 || e.keyCode == 27)
+                    $("div.dropdown-backdrop").click();
+            });
+
+            if (this.model.get("purchasesGrouped").length > 0) {
+                console.log("Hey!");
+                this.$(".dropdown div").attr("data-toggle", "dropdown");
+                this.pieResize();
+                this.drawPieChart(this.model.get("purchasesGrouped").toJSON(), 100);
+            }
+
+            //new ErrorView({ model: this.loginError, el: this.$("form div.alert") }).render()
+        }
+    })
+});

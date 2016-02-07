@@ -65,7 +65,7 @@ class Application extends Controller {
           case login: String =>
             logic.savePurchase(login, purchaseData) match {
               case Some(purchase: Purchase) =>
-                Ok(purchase.toJson)
+                Ok(Json.toJson(purchase))
               case _ =>
                 Ok(ErrorMessage.noGroupWithSuchName)
             }

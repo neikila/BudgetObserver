@@ -1,6 +1,6 @@
 /**
- * Created by neikila on 01.02.16.
- */
+    * Created by neikila.
+    */
 requirejs.config({
     baseUrl: "/assets/javascripts/singlePage/",
     paths: {
@@ -14,14 +14,22 @@ requirejs.config({
         signup: 'Signup',
         navbarRight: "NavbarRight",
         navbarLeft: "NavbarLeft",
+        groupModel: "GroupModel",
+        purchaseModel: "PurchaseModel",
+        purchasesCollection: "PurchasesCollection",
+        purchasesView: "PurchasesView",
         utils: "Utils",
         jquery: '../utils/jquery-2.2.0.min',
+        chart: '../utils/Chart',
         backbone: '../utils/backbone',
         underscore: '../utils/underscore',
         bs: '../../bootstrap/javascripts/bootstrap.min'
     },
     shim: {
         'bs': {
+            deps: ['jquery']
+        },
+        'chart': {
             deps: ['jquery']
         },
         'underscore': {
@@ -40,16 +48,12 @@ require(['jquery', "appState", "user", "controller", "container", "navbarRight",
         var user = new User();
 
         var appState = new AppState();
+        appState.setListeners(user);
+
         user.getFromServer(appState);
 
         var controller = new Controller(); // Создаём контроллер
         controller.initializeWithAppState(appState);
-
-        //var MyFamily = new Family([ // Моя семья
-        //    {Name: "Саша" },
-        //    {Name: "Юля" },
-        //    {Name: "Елизар" }
-        //]);
 
         var navbarRight = new NavbarRight({ model: user });
         navbarRight.init(appState);

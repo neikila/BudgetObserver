@@ -1,6 +1,6 @@
 /**
- * Created by neikila on 05.02.16.
- */
+    * Created by neikila.
+    */
 define(["backbone", "utils"], function(Backbone, Utils) {
     return Backbone.View.extend({
         el: $(".nav.navbar-right"),
@@ -17,6 +17,7 @@ define(["backbone", "utils"], function(Backbone, Utils) {
         logout: function() {
             Utils.getJSON("/logout");
             this.model.deauth();
+            this.appState.set("state", "start");
         },
 
         initialize: function () { // Подписка на событие модели

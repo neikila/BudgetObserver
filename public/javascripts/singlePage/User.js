@@ -1,6 +1,6 @@
 /**
- * Created by neikila on 03.02.16.
- */
+    * Created by neikila.
+    */
 define(["backbone"], function (Backbone) {
     return Backbone.Model.extend({
         defaults: {
@@ -13,7 +13,7 @@ define(["backbone"], function (Backbone) {
             otherGroups: []
         },
 
-        getFromServer: function(appState) {
+        getFromServer: function() {
             var self = this;
             $.ajax({
                 type: "GET",
@@ -23,7 +23,6 @@ define(["backbone"], function (Backbone) {
                     if (json.isAuth) {
                         self.authWithJson(json);
                         self.set("isAuth", true);
-                        appState.set("groupToShow", self.get("defaultGroup"))
                     }
                 }
             });

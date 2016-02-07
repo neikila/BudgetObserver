@@ -1,6 +1,6 @@
 /**
- * Created by neikila on 03.02.16.
- */
+    * Created by neikila.
+    */
 define(["backbone"], function(Backbone) {
     return Backbone.Router.extend({
         routes: {
@@ -8,7 +8,7 @@ define(["backbone"], function(Backbone) {
             "!/": "start", // Начальная страница
             "!/login": "login",
             "!/signup": "signup",
-            "!/purchase": "purchases" // Показ группы
+            "!/purchases": "purchases" // Показ группы
         },
 
         initializeWithAppState: function(appStateExternal) {

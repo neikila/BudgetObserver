@@ -1,6 +1,6 @@
 /**
- * Created by neikila on 11.01.16.
- */
+    * Created by neikila.
+    */
 
 var purchasesPage = function() {
     var groupName = undefined;
@@ -74,18 +74,13 @@ var purchasesPage = function() {
             return false;
         });
 
-        $(window).on("resize", function(event) {
+        $(window).on("resize", function() {
             page.resize();
         });
     };
 
     page.resize = function() {
-        var pie = $("canvas");
         var pieholder = $("div.pieholder");
-        var pieLength = pieholder.width();
-        if (pieLength > 400) {
-            pieLength = 400
-        }
         pieholder.empty().append("<canvas id='graph'></canvas>");
         pieChart = null;
         page.setPieSize();
