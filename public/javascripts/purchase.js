@@ -49,8 +49,9 @@ var purchasesPage = function() {
         };
 
     page.setListeners = function () {
-        $('#product').focusout(function(){
-            $("div.dropdown-backdrop").click();
+        $('div.dropdown').keydown(function(e) {
+            if (e.keyCode == 9 || e.keyCode == 27)
+                $("div.dropdown-backdrop").click();
         });
 
         $("#savePur").click(function(){
@@ -105,16 +106,15 @@ var purchasesPage = function() {
                 success: function(json){
                     page.setGroupName(json.groupName);
                     var tableEl = $("tbody");
-                    var indexPurchase = 1;
+                    var indexPurchase = 0;
                     console.log("json: " + json);
                     tableEl.empty();
                     json.purchases.reverse().forEach(function(purchase) {
                         tableEl.append("<tr>" +
-                            "<th scope='row'>" + indexPurchase + "</th>" +
+                            "<th scope='row'>" + (json.purchases.length - indexPurchase++) + "</th>" +
                             "<td>" + purchase.productName + " </td>" +
                             "<td>" + purchase.amount + "</td>" +
                             "</tr>");
-                        ++indexPurchase;
                     });
                     if (json.purchases.length > 0)
                         $(".dropdown div").attr("data-toggle", "dropdown");

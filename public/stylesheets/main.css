@@ -4,10 +4,13 @@
 
 #navbar ul li a.caret-before {
     padding-right: 3px;
+    z-index: 3;
+    position: absolute;
 }
 
 #navbar ul li a.caret-after {
-    padding-left: 7px;
+    z-index: 2;
+    padding-left: 77px;
     padding-right: 10px;
 }
 
